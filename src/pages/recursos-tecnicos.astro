@@ -1,7 +1,7 @@
 ---
 /**
  * Recursos técnicos — SPEC §19.
- * Centraliza fichas técnicas, catálogo, manuales, calculadora, CAD/BIM.
+ * Centraliza fichas técnicas, catálogo, manuales, CAD/BIM.
  * Hasta validar los assets reales, mostramos estructura con placeholders.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -41,14 +41,6 @@ const sections = [
     ],
   },
   {
-    id: 'calculadora',
-    title: 'Calculadora de ladrillos',
-    description: 'Calculá unidades, desperdicio y pallets para tu pared. Disponible próximamente.',
-    items: [
-      { name: 'Calculadora (próximamente)', pending: true },
-    ],
-  },
-  {
     id: 'descargas',
     title: 'Descargas',
     description: 'Documentos normativos, ensayos y certificaciones una vez validados.',
@@ -62,7 +54,7 @@ const sections = [
 
 <BaseLayout
   title="Fichas Técnicas de Ladrillos Cerámicos | Cerámica Puerto Rico"
-  description="Centro técnico de Cerámica Puerto Rico: fichas técnicas, catálogo, manuales de colocación, calculadora de ladrillos y documentación normativa."
+  description="Centro técnico de Cerámica Puerto Rico: fichas técnicas, catálogo, manuales de colocación y documentación normativa."
   path="/recursos-tecnicos"
   breadcrumbs={breadcrumbs}
 >

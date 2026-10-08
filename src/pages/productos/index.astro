@@ -31,14 +31,17 @@ const breadcrumbs = [
     </div>
   </section>
 
-  <section class="section">
+  <section class="section catalog-section">
     <div class="container">
       <div class="filters">
-        <h2 class="filters-title">Filtrar por tipo</h2>
+        <div class="filters-head">
+          <h2 class="filters-title">Filtrar por tipo</h2>
+          <span class="filters-count" data-filter-count>{products.length} productos</span>
+        </div>
         <ul class="filter-list">
-          <li><a href="/productos" class="filter-chip is-active">Todos</a></li>
+          <li><a href="/productos" class="filter-chip is-active" data-filter-chip>Todos</a></li>
           {productTypes.map((t) => (
-            <li><a href={`/productos?type=${t.id}`} class="filter-chip">{t.label}</a></li>
+            <li><a href={`/productos?type=${t.id}`} class="filter-chip" data-filter-chip>{t.label}</a></li>
           ))}
         </ul>
         <p class="filters-note">
@@ -46,9 +49,17 @@ const breadcrumbs = [
         </p>
       </div>
 
-      <div class="grid-balanced product-grid">
-        {products.map((p) => <ProductCard product={p} />)}
+      <div class="grid-balanced product-grid" data-product-grid>
+        {products.map((p) => (
+          <div class="product-cell" data-type={p.type}>
+            <ProductCard product={p} />
+          </div>
+        ))}
       </div>
+
+      <p class="filters-empty" data-filter-empty hidden>
+        No hay productos de ese tipo. <a href="/productos">Ver todos</a>
+      </p>
     </div>
   </section>
 
@@ -64,9 +75,19 @@ const breadcrumbs = [
 </BaseLayout>
 
 <style>
-  .page-hero {
-    background: var(--color-terracota-50);
-    padding-block: var(--space-8);
+.page-hero {
+    background: var(--color-terracotta-50);
+    padding-block: var(--space-7) var(--space-6);
+  }
+
+  /* El padding de .section (space-9) mas el del hero dejaba ~150px de vacio
+     entre el subtitulo y los filtros. Solo se achica en el catalogo. */
+  .catalog-section {
+    padding-block: var(--space-6);
+  }
+  @media (max-width: 640px) {
+    .page-hero { padding-block: var(--space-6) var(--space-5); }
+    .catalog-section { padding-block: var(--space-5); }
   }
   .page-hero h1 {
     font-size: clamp(2rem, 4vw, 3rem);
@@ -79,11 +100,36 @@ const breadcrumbs = [
   }
 
   .filters {
-    margin-bottom: var(--space-7);
+    margin-bottom: var(--space-5);
+  }
+  .filters-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
   }
   .filters-title {
     font-size: var(--fs-300);
-    margin-bottom: var(--space-3);
+    margin: 0;
+  }
+  .filters-count {
+    font-size: var(--fs-100);
+    color: var(--color-grafito-500);
+  }
+  .filters-empty {
+    margin: var(--space-5) 0 0;
+    color: var(--color-grafito-500);
+  }
+  .filters-empty a {
+    color: var(--color-terracotta-600);
+    font-weight: 600;
+  }
+
+  /* La celda se oculta con el atributo hidden, pero .grid-balanced > * gana
+     en especificidad y la seguiria mostrando. */
+  .product-cell[hidden] {
+    display: none;
   }
   .filter-list {
     display: flex;
@@ -125,3 +171,58 @@ const breadcrumbs = [
   .cta-block h2 { color: var(--color-blanco); margin-bottom: var(--space-2); }
   .cta-block p { color: var(--color-grafito-100); margin: 0; }
 </style>
+
+<script>
+  /**
+   * Filtro por tipo.
+   *
+   * El sitio se genera estatico: hay un unico HTML para /productos, asi que
+   * Astro.url.searchParams llega vacio en build y filtrar en el servidor no
+   * funciona. Por eso el filtro corre aca, sobre los chips que ya apuntan a
+   * ?type=... para que los enlaces sigan siendo compartibles.
+   */
+  const grid = document.querySelector<HTMLElement>('[data-product-grid]');
+  const chips = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-filter-chip]'));
+  const counter = document.querySelector<HTMLElement>('[data-filter-count]');
+  const empty = document.querySelector<HTMLElement>('[data-filter-empty]');
+  const cells = grid ? Array.from(grid.querySelectorAll<HTMLElement>('[data-type]')) : [];
+
+  const typeOf = (chip: HTMLAnchorElement) => new URL(chip.href).searchParams.get('type');
+
+  function apply(type: string | null, push = false) {
+    let shown = 0;
+    for (const cell of cells) {
+      const match = !type || cell.dataset.type === type;
+      cell.hidden = !match;
+      if (match) shown++;
+    }
+    for (const chip of chips) {
+      chip.classList.toggle('is-active', typeOf(chip) === type);
+    }
+    if (counter) {
+      counter.textContent = type
+        ? `${shown} de ${cells.length} productos`
+        : `${cells.length} productos`;
+    }
+    if (empty) empty.hidden = shown > 0;
+    if (push) {
+      const url = type ? `${location.pathname}?type=${encodeURIComponent(type)}` : location.pathname;
+      history.pushState({ type }, '', url);
+    }
+  }
+
+  for (const chip of chips) {
+    chip.addEventListener('click', (event) => {
+      event.preventDefault();
+      apply(typeOf(chip), true);
+      grid?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  window.addEventListener('popstate', () => {
+    apply(new URLSearchParams(location.search).get('type'));
+  });
+
+  // arranca con el filtro que venga en la URL, por si se comparte o recarga
+  apply(new URLSearchParams(location.search).get('type'));
+</script>

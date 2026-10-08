@@ -239,4 +239,72 @@ const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${
     border-color: var(--brand-rust);
     color: #fff;
   }
+
+  /* — Celular: tarjeta compacta dentro del catálogo — */
+  /* Solo aplica a las tarjetas del grid del catálogo (.grid-balanced), para
+     no achicar las de otros lugares. La foto se reduce sola al angostar la
+     tarjeta, porque mantiene su proporción. */
+  @media (max-width: 640px) {
+    :global(.grid-balanced) .product-body {
+      gap: var(--space-1);
+      padding: var(--space-3);
+    }
+    :global(.grid-balanced) .tag {
+      top: var(--space-2);
+      padding: 0.15rem 0.4rem;
+      font-size: 0.5625rem;
+      letter-spacing: 0.04em;
+    }
+    :global(.grid-balanced) .tag--solid { left: var(--space-2); }
+    :global(.grid-balanced) .tag--soft { right: var(--space-2); }
+    /* el resumen y la etiqueta de rendimiento ocupan más de lo que aportan
+       en una tarjeta angosta; la ficha completa está en la página del producto */
+    :global(.grid-balanced) .product-desc,
+    :global(.grid-balanced) .product-meta-label {
+      display: none;
+    }
+    :global(.grid-balanced) .product-title {
+      font-size: var(--fs-200);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    /* de la caja de specs queda solo el dato de medidas */
+    :global(.grid-balanced) .product-spec:not(:first-child) {
+      display: none;
+    }
+    :global(.grid-balanced) .product-specs {
+      grid-template-columns: 1fr;
+      gap: 0;
+      margin: var(--space-1) 0 0;
+      padding: var(--space-2);
+    }
+    :global(.grid-balanced) .product-spec {
+      flex-direction: row;
+      align-items: baseline;
+      gap: var(--space-2);
+    }
+    :global(.grid-balanced) .product-spec dt {
+      font-size: 0.5625rem;
+    }
+    :global(.grid-balanced) .product-spec dd {
+      font-size: var(--fs-50);
+    }
+    :global(.grid-balanced) .pending {
+      font-size: 0.5625rem;
+      padding: 0.15rem 0.4rem;
+    }
+    :global(.grid-balanced) .product-actions {
+      gap: var(--space-1);
+      padding-top: var(--space-2);
+    }
+    :global(.grid-balanced) .product-cta {
+      font-size: var(--fs-50);
+      padding: 0.5rem 0.4rem;
+    }
+    :global(.grid-balanced) .product-call {
+      width: 34px;
+    }
+  }
 </style>

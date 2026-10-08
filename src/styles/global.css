@@ -287,11 +287,24 @@ a:hover { color: var(--brand-deep); }
   gap: var(--space-5);
 }
 .grid-balanced > * {
-  flex: 0 1 320px;
-  max-width: 100%;
-  display: flex;
-  flex-direction: column;
-}
+    flex: 0 1 320px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* En celular el catálogo pasa a 2 tarjetas por fila, para no obligar a
+     scrollear una pantalla y media por producto. */
+  @media (max-width: 640px) {
+    .grid-balanced { gap: var(--space-3); }
+    .grid-balanced > * {
+      flex: 0 1 calc(50% - var(--space-3) / 2);
+    }
+  }
+  /* pantallas muy angostas: 1 sola columna para que no quede ilegible */
+  @media (max-width: 359px) {
+    .grid-balanced > * { flex: 0 1 100%; }
+  }
 
 /* — Card — */
 .card {
