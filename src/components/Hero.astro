@@ -1,7 +1,7 @@
 ---
 /**
  * Hero.astro — bloque principal según la referencia Stitch:
- * columna de texto (eyebrow, H1, bajada, 2 CTA, chips de confianza)
+ * columna de texto (eyebrow, H1, bajada, 2 CTA)
  * + tarjeta de imagen con badge naranja superpuesto.
  * SPEC §22.
  */
@@ -16,17 +16,11 @@ interface Props {
 
 const {
   eyebrow = 'Solidez estructural y aislación térmica',
-  title = 'Vos construís, nosotros lo llevamos.',
+  title = 'Calidad que construye confianza',
   subtitle = 'Ladrillos cerámicos huecos y portantes producidos en nuestra fábrica de Puerto Rico, Misiones. Stock constante, logística propia y el precio de fábrica.',
   primaryCta = { href: '/productos', label: 'Explorar Catálogo' },
   secondaryCta = { href: '/contacto', label: 'Pedir Presupuesto' },
 } = Astro.props;
-
-const trustPoints = [
-  'Presupuesto sin cargo',
-  'Stock constante',
-  'Acompañamos tu obra',
-];
 ---
 
 <section class="hero">
@@ -46,27 +40,15 @@ const trustPoints = [
           </svg>
         </a>
       </div>
-
-      <ul class="hero-trust">
-        {trustPoints.map((t) => (
-          <li>
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
-                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20 6 9 17l-5-5" />
-            </svg>
-            {t}
-          </li>
-        ))}
-      </ul>
     </div>
 
     <div class="hero-media">
       <img
         class="hero-photo"
-        src="/images/planta/horno-pallets-1.webp"
-        alt="Pallet de ladrillos cerámicos entrando al horno de la planta de Puerto Rico, Misiones"
-        width="1600"
-        height="1451"
+        src="/images/hero/portada-deposito.webp"
+        alt="Pallets de ladrillos cerámicos almacenados en el depósito de la planta de Puerto Rico, Misiones"
+        width="960"
+        height="1280"
         fetchpriority="high"
         decoding="async"
       />
@@ -76,7 +58,7 @@ const trustPoints = [
         <p class="hero-badge-text">
           Ladrillo hueco 12x18x24 en planta
         </p>
-        <a href="/productos/12x18x24-visto" class="hero-badge-link">
+        <a href="/productos/12x18x24-liviano" class="hero-badge-link">
           Ver ese producto
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -102,7 +84,10 @@ const trustPoints = [
   }
 
   h1 {
-    font-size: clamp(2.125rem, 4vw, 3.25rem);
+    font-size: clamp(1.875rem, 3.4vw, 2.75rem);
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
     margin-bottom: var(--space-4);
   }
   .hero-sub {
@@ -120,23 +105,6 @@ const trustPoints = [
     margin-bottom: var(--space-6);
   }
 
-  .hero-trust {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3) var(--space-5);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .hero-trust li {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: var(--fs-100);
-    color: var(--text-muted);
-  }
-  .hero-trust svg { color: var(--accent); flex-shrink: 0; }
-
   /* — Media — */
   .hero-media {
     position: relative;
@@ -148,6 +116,7 @@ const trustPoints = [
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center 55%;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
   }
@@ -197,5 +166,12 @@ const trustPoints = [
       margin-top: calc(var(--space-4) * -1);
       margin-left: var(--space-4);
     }
+  }
+
+  /* La foto de portada es vertical, asi que en pantalla angosta conviene
+     dejar el encuadre mas alto y no recortar tanto. */
+  @media (max-width: 640px) {
+    .hero-media { aspect-ratio: 3 / 4; }
+    .hero-photo { object-position: center 50%; }
   }
 </style>

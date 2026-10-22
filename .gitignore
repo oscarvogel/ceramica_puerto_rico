@@ -37,6 +37,14 @@ referencias/
 *.MOV
 *.mp4
 
+# Correcciones que llegan de la empresa: material de trabajo, no va al repo
+correcciones página web.pdf
+/correcciones *.pdf
+
+# ...pero los videos del proceso productivo si van al repo: ya estan
+# recomprimidos a 720p y pesan entre 2 y 4 MB cada uno.
+!public/video/*.mp4
+
 # El logo original que usamos para trazar public/logo.svg
 /logo ceramica pto rico.jpeg
 

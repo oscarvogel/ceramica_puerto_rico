@@ -10,11 +10,10 @@ const year = new Date().getFullYear();
 
 const catalogLinks = [
   { href: '/productos?type=portante', label: 'Ladrillos Portantes' },
-  { href: '/productos?type=comun', label: 'Ladrillos Comunes' },
   { href: '/productos?type=visto', label: 'Ladrillos Vistos' },
-  { href: '/productos/18x18x24-liviano', label: 'Ladrillos Livianos' },
-  { href: '/productos/peine-encadenado', label: 'Peine Encadenado' },
-  { href: '/productos/losa-sapo-43x12x20', label: 'Losa Sapo 43x12x20' },
+  { href: '/productos?type=liviano', label: 'Ladrillos Livianos' },
+  { href: '/productos?type=encadenado', label: 'Peine Encadenado' },
+  { href: '/historia-y-proceso', label: 'Historia y Proceso' },
 ];
 ---
 
@@ -86,7 +85,7 @@ const catalogLinks = [
         <div class="footer-cta-actions">
           <a href="/contacto" class="btn btn-primary btn-block">Solicitar Presupuesto</a>
           <a href="/distribuidores" class="btn btn-secondary btn-block">
-            Ver Mapa de Distribución
+            Ver puntos de venta
           </a>
         </div>
       </div>
@@ -94,8 +93,16 @@ const catalogLinks = [
 
     <div class="footer-bottom">
       <p>© {year} {company.legalName}. Todos los derechos reservados.</p>
+      <ul class="footer-areas">
+        {company.areas.map((a) => (
+          <li>
+            <span class="footer-area-label">{a.label}</span>
+            <a href={`tel:${a.tel}`}>{a.display}</a>
+          </li>
+        ))}
+      </ul>
       <ul class="footer-legal">
-        <li><a href="/empresa">Industria Misionera</a></li>
+        <li><a href="/historia-y-proceso">Industria Misionera</a></li>
         <li><a href="/recursos-tecnicos">Términos de Despacho</a></li>
         <li><a href="/recursos-tecnicos">Política de Calidad</a></li>
       </ul>
@@ -171,6 +178,31 @@ const catalogLinks = [
     font-size: var(--fs-50);
   }
   .footer-bottom p { margin: 0; }
+
+  .footer-areas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .footer-areas li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+  .footer-area-label {
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 600;
+    color: var(--text-soft);
+  }
+  .footer-areas a {
+    color: var(--brand-ink);
+    font-weight: 600;
+  }
+  .footer-areas a:hover { color: var(--brand-rust); }
   .footer-legal {
     display: flex;
     flex-wrap: wrap;

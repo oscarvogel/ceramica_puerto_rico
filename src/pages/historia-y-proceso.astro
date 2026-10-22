@@ -1,0 +1,300 @@
+---
+/**
+ * Historia y Proceso Productivo.
+ *
+ * Reemplaza a la antigua solapa "Obras & Noticias" (/empresa), que quedó
+ * como placeholder. Acá va primero la historia de la empresa y después el
+ * proceso de fabricación, etapa por etapa, con los videos de la fábrica.
+ *
+ * Etapas 1 a 3 con video de la planta. Las etapas 4 y 5 todavía no tienen
+ * video: se muestran con foto hasta que la empresa envie el material.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const breadcrumbs = [
+  { name: 'Inicio', url: '/' },
+  { name: 'Historia y Proceso', url: '/historia-y-proceso' },
+];
+
+interface Stage {
+  step: string;
+  title: string;
+  desc: string;
+  video?: { src: string; poster: string };
+  image?: { src: string; alt: string };
+}
+
+const stages: Stage[] = [
+  {
+    step: '01',
+    title: 'Extracción y acopio de materia prima',
+    desc: 'Seleccionamos cuidadosamente nuestras arcillas y las almacenamos durante el tiempo necesario para garantizar una materia prima en óptimas condiciones.',
+    video: {
+      src: '/video/01-extraccion-acopio.mp4',
+      poster: '/video/01-extraccion-acopio.jpg',
+    },
+  },
+  {
+    step: '02',
+    title: 'Preparación de la tierra',
+    desc: 'En el proceso de preparación, la tierra es depurada repetidamente, para garantizar una materia prima homogénea y en óptimas condiciones para la fabricación.',
+    video: {
+      src: '/video/02-preparacion-tierra.mp4',
+      poster: '/video/02-preparacion-tierra.jpg',
+    },
+  },
+  {
+    step: '03',
+    title: 'Prensado de los ladrillos',
+    desc: 'La tierra preparada, a través de su paso por la prensa, adquiere finalmente forma de ladrillo.',
+    video: {
+      src: '/video/03-prensado-ladrillos.mp4',
+      poster: '/video/03-prensado-ladrillos.jpg',
+    },
+  },
+  {
+    step: '04',
+    title: 'Secado y horneado de los ladrillos',
+    desc: 'El ladrillo seco se hornea a temperatura controlada, y de ahí sale listo para su uso en obra.',
+    image: {
+      src: '/images/planta/secado-estanterias.webp',
+      alt: 'Estanterías de ladrillos en proceso de secado dentro de la planta',
+    },
+  },
+  {
+    step: '05',
+    title: 'Apilado y despacho',
+    desc: 'Los ladrillos se apilan, se identifican y se despachan a obra en los camiones de la planta.',
+    image: {
+      src: '/images/planta/pallets-despacho.webp',
+      alt: 'Pallets de ladrillos listos para el despacho en la planta de Puerto Rico',
+    },
+  },
+];
+---
+
+<BaseLayout
+  title="Historia y Proceso Productivo | Cerámica Puerto Rico"
+  description="La historia de Cerámica Puerto Rico y el proceso de fabricación de ladrillos cerámicos, etapa por etapa: extracción, preparación, prensado, secado y horneado, y despacho."
+  path="/historia-y-proceso"
+  breadcrumbs={breadcrumbs}
+>
+  <section class="page-hero">
+    <div class="container">
+      <span class="section-eyebrow">Historia y proceso productivo</span>
+      <h1>Cómo se hace un ladrillo de Cerámica Puerto Rico</h1>
+      <p class="page-hero-sub">
+        Más de 50 años fabricando en Puerto Rico, Misiones. Acá va el recorrido
+        completo: de la arcilla en el campo al ladrillo apilado en el depósito.
+      </p>
+    </div>
+  </section>
+
+  <!-- Historia -->
+  <section class="section">
+    <div class="container">
+      <div class="history-grid">
+        <div>
+          <span class="section-eyebrow">Nuestra historia</span>
+          <h2>Más de 50 años construyendo juntos</h2>
+          <p>
+            Cerámica Puerto Rico comunica actividad industrial desde 1975. La
+            planta de Puerto Rico, Misiones, produce ladrillos cerámicos huecos
+            y portantes para obras de toda la región: corralones, constructoras,
+            viviendas y edificios.
+          </p>
+          <p>
+            <strong>Estamos completando esta cronología con los hitos de la
+            empresa.</strong> Si tenés material de la historia de la fábrica,
+            envianoselo por WhatsApp y lo incorporamos.
+          </p>
+        </div>
+        <ul class="timeline">
+          <li>
+            <span class="timeline-year">1975</span>
+            <span class="timeline-text">Inicio de la actividad industrial de la empresa.</span>
+          </li>
+          <li>
+            <span class="timeline-year">Hoy</span>
+            <span class="timeline-text">
+              Planta en Puerto Rico, Misiones, con 4 líneas de producto: livianos,
+              portantes, vistos y peine encadenado.
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Proceso productivo -->
+  <section class="section section--dark" id="proceso">
+    <div class="container">
+      <span class="section-eyebrow">Proceso productivo</span>
+      <h2>5 etapas</h2>
+      <p class="section-intro">
+        La fabricación de ladrillos cerámicos consta de 5 etapas. Te mostramos
+        cada una, filmada en la planta.
+      </p>
+
+      <ol class="stages">
+        {stages.map((s) => (
+          <li class="stage">
+            <div class="stage-media">
+              {s.video ? (
+                <video
+                  controls
+                  preload="none"
+                  playsinline
+                  poster={s.video.poster}
+                  aria-label={s.title}
+                >
+                  <source src={s.video.src} type="video/mp4" />
+                  Tu navegador no puede reproducir este video.
+                  <a href={s.video.src}>Descargar el video</a>
+                </video>
+              ) : s.image ? (
+                <img
+                  src={s.image.src}
+                  alt={s.image.alt}
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : null}
+            </div>
+            <div class="stage-text">
+              <span class="step-num">{s.step}</span>
+              <h3>{s.title}</h3>
+              <p>{s.desc}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--tight section--dark cta">
+    <div class="container cta-block">
+      <h2>Conocé nuestros productos</h2>
+      <a href="/productos" class="btn btn-primary">Ir al catálogo</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-hero {
+    background: var(--color-terracotta-50);
+    padding-block: var(--space-8);
+  }
+  .page-hero h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: var(--space-3);
+  }
+  .page-hero-sub {
+    color: var(--color-grafito-500);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  .history-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-7);
+    align-items: start;
+  }
+  .history-grid h2 { margin-bottom: var(--space-4); }
+  .history-grid p {
+    color: var(--color-grafito-700);
+    max-width: 58ch;
+  }
+  @media (max-width: 800px) {
+    .history-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+  }
+
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 2px solid var(--color-terracota-500);
+  }
+  .timeline li {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-grafito-100);
+  }
+  .timeline-year {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-terracota-600);
+  }
+  .timeline-text { color: var(--color-grafito-700); }
+
+  .section--dark h2 { color: var(--color-blanco); }
+  .section--dark .section-intro { color: var(--color-grafito-100); }
+
+  .stages {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-7);
+  }
+  .stage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    align-items: center;
+  }
+  .stage:nth-child(even) .stage-media { order: 2; }
+  @media (max-width: 800px) {
+    .stage { grid-template-columns: 1fr; gap: var(--space-4); }
+    .stage:nth-child(even) .stage-media { order: 0; }
+  }
+
+  .stage-media {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-grafito-100);
+    box-shadow: var(--shadow-md);
+  }
+  .stage-media video,
+  .stage-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+  }
+  .stage-media img { object-fit: cover; }
+  /* los videos de la planta son verticales: se ven enteros, con fondo negro */
+  .stage-media video { object-fit: contain; background: #000; }
+
+  .stage-text { display: flex; flex-direction: column; gap: var(--space-2); }
+  .stage-text h3 {
+    color: var(--color-blanco);
+    font-size: var(--fs-400);
+    margin: 0;
+  }
+  .stage-text p {
+    color: var(--color-grafito-100);
+    margin: 0;
+    max-width: 52ch;
+  }
+  .step-num {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-terracota-300);
+    font-size: var(--fs-200);
+  }
+
+  .cta-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+  }
+  .cta-block h2 { color: var(--color-blanco); margin: 0; }
+</style>
