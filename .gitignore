@@ -48,5 +48,12 @@ correcciones página web.pdf
 # El logo original que usamos para trazar public/logo.svg
 /logo ceramica pto rico.jpeg
 
+# Credenciales del hosting: nunca van al repo
+.ferozo-credentials
+*.credentials
+
+# Configuracion SMTP del servidor (tiene la clave del mail): nunca al repo
+public/api/config.php
+
 # Log del formulario de contacto (puede contener datos de clientes)
 public/api/logs/
