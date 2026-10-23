@@ -347,20 +347,6 @@ a.card:hover {
   .reveal { opacity: 1; transform: none; transition: none; }
 }
 
-/* — Etiqueta "Pendiente de validación" — */
-.pending {
-  display: inline-block;
-  font-size: var(--fs-50);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-sm);
-  background: var(--accent-soft);
-  color: var(--brand-rust);
-  border: 1px solid var(--accent-line);
-}
-
 /* — Skip link — */
 .skip-link {
   position: absolute;

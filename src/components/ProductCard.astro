@@ -33,18 +33,22 @@ const wallThickness = product.dimensions
   ? `${product.dimensions.split('×')[0].trim()} cm`
   : null;
 
-const specs = [
-  { label: 'Dimensiones', value: product.dimensions ?? 'A confirmar' },
-  {
-    label: 'Rendimiento',
-    value: product.unitsPerM2 ? `${product.unitsPerM2} un/m²` : 'A confirmar',
-  },
-  { label: 'Peso', value: product.weightKg ? formatKg(product.weightKg) : 'A confirmar' },
-  {
-    label: 'Palet',
-    value: product.palletUnits ? `${product.palletUnits} unidades` : 'A confirmar',
-  },
-];
+/**
+ * Specs de la tarjeta. Si un dato no está cargado, la fila NO se imprime:
+ * no se muestra "A confirmar" ni ningún aviso de validación pendiente.
+ */
+type Spec = { label: string; value: string };
+
+const specs: Spec[] = [
+  product.dimensions ? { label: 'Dimensiones', value: product.dimensions } : null,
+  product.unitsPerM2
+    ? { label: 'Rendimiento', value: `${product.unitsPerM2} un/m²` }
+    : null,
+  product.weightKg ? { label: 'Peso', value: formatKg(product.weightKg) } : null,
+  product.palletUnits
+    ? { label: 'Palet', value: `${product.palletUnits} unidades` }
+    : null,
+].filter((s): s is Spec => s !== null);
 
 const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${product.dimensions})` : ''}.`;
 ---
@@ -58,8 +62,10 @@ const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${
 
   <div class="product-body">
     <div class="product-meta">
-      {wallThickness ? <span>{wallThickness}</span> : <span></span>}
-      <span class="product-meta-label">Rendimiento</span>
+      <span>{wallThickness ?? ''}</span>
+      {product.unitsPerM2 && (
+        <span class="product-meta-label">{product.unitsPerM2} un/m²</span>
+      )}
     </div>
 
     <h3 class="product-title">
@@ -76,8 +82,6 @@ const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${
         </div>
       ))}
     </dl>
-
-    {product.pending && <span class="pending">Pendiente de validación</span>}
 
     <div class="product-actions">
       <a
@@ -202,6 +206,8 @@ const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${
     border-radius: var(--radius-md);
   }
   .product-spec { display: flex; flex-direction: column; gap: 0.1rem; }
+  /* si la caja queda con una fila impar, el último dato ocupa el ancho completo */
+  .product-spec:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .product-spec dt {
     font-size: var(--fs-50);
     font-weight: 600;
@@ -291,10 +297,6 @@ const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${
     }
     :global(.grid-balanced) .product-spec dd {
       font-size: var(--fs-50);
-    }
-    :global(.grid-balanced) .pending {
-      font-size: 0.5625rem;
-      padding: 0.15rem 0.4rem;
     }
     :global(.grid-balanced) .product-actions {
       gap: var(--space-1);

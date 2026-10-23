@@ -5,9 +5,10 @@
  * que define las 4 líneas que se producen y los 9 modelos de cada una, con su
  * foto correspondiente, su peso unitario y su cantidad de ladrillos por pallet.
  *
- * Lo que la empresa NO confirmó queda en `null` y la interfaz lo muestra como
- * "A confirmar": rendimiento por m², peso del pallet lleno, resistencia a la
- * compresión, conductividad térmica y ficha técnica en PDF.
+ * Lo que la empresa NO confirmó queda en `null` y la interfaz NO lo muestra:
+ * rendimiento por m², peso del pallet lleno, resistencia a la compresión,
+ * conductividad térmica y ficha técnica en PDF. Si un dato no está, la fila
+ * directamente no se imprime (no se imprime "A confirmar" ni "Pendiente").
  *
  * Para cambiar la foto de un modelo: dejala en
  * public/images/productos/<slug>.webp (o .jpg) y ProductMedia la toma sola.
@@ -30,7 +31,6 @@ export interface Product {
   /** familia comercial: portante, visto, liviano, encadenado */
   type: ProductType;
   application: Application[];
-  pending?: boolean;
   description: string;
   /** ancho × alto × largo en cm */
   dimensions?: string | null;
@@ -57,7 +57,6 @@ export const products: Product[] = [
     name: '12x18x24 Liviano',
     type: 'liviano',
     application: ['cerramientos', 'tabiques-interiores', 'viviendas'],
-    pending: true,
     description:
       'Ladrillo hueco liviano de 12 cm. Es el formato más usado de la línea, para cerramientos de viviendas y tabiques.',
     dimensions: '12 × 18 × 24 cm',
@@ -78,7 +77,6 @@ export const products: Product[] = [
     name: '18x18x24 Liviano',
     type: 'liviano',
     application: ['cerramientos', 'viviendas', 'edificios'],
-    pending: true,
     description:
       'Ladrillo hueco liviano de 18 cm. Mayor espesor para cerramientos con más aislación y mejor comportamiento térmico.',
     dimensions: '18 × 18 × 24 cm',
@@ -99,7 +97,6 @@ export const products: Product[] = [
     name: '8x18x24 Liviano',
     type: 'liviano',
     application: ['cerramientos', 'tabiques-interiores'],
-    pending: true,
     description:
       'Ladrillo hueco liviano de 8 cm. El más liviano de la línea, para cerramientos y tabiques donde hay que reservar poco ancho.',
     dimensions: '8 × 18 × 24 cm',
@@ -122,7 +119,6 @@ export const products: Product[] = [
     name: '12x18x24 Portante',
     type: 'portante',
     application: ['muros-portantes', 'cerramientos', 'edificios'],
-    pending: true,
     description:
       'Ladrillo portante de 12 cm. Menos espesor que el de 18 cm y mismo comportamiento estructural, para cuando hay que reservar ancho.',
     dimensions: '12 × 18 × 24 cm',
@@ -143,7 +139,6 @@ export const products: Product[] = [
     name: '18x18x24 Portante',
     type: 'portante',
     application: ['muros-portantes', 'edificios', 'cerramientos'],
-    pending: true,
     description:
       'Ladrillo portante de 18 cm para muros que soportan cargas. Es la pieza de mayor resistencia de la línea; el uso estructural requiere verificación del profesional a cargo.',
     dimensions: '18 × 18 × 24 cm',
@@ -166,7 +161,6 @@ export const products: Product[] = [
     name: '12x18x24 Visto',
     type: 'visto',
     application: ['cerramientos', 'tabiques-interiores', 'viviendas'],
-    pending: true,
     description:
       'Ladrillo visto de 12 cm. Se deja la cara a la vista, sin revoco ni pintura.',
     dimensions: '12 × 18 × 24 cm',
@@ -187,7 +181,6 @@ export const products: Product[] = [
     name: '10x15x24 Visto',
     type: 'visto',
     application: ['cerramientos', 'tabiques-interiores'],
-    pending: true,
     description:
       'Ladrillo visto de 10 cm de formato intermedio. Para muros vistos donde se busca pieza más chica.',
     dimensions: '10 × 15 × 24 cm',
@@ -210,7 +203,6 @@ export const products: Product[] = [
     name: '12x18x24 Peine Encadenado',
     type: 'encadenado',
     application: ['encadenados', 'cerramientos'],
-    pending: true,
     description:
       'Peine encadenado de 12 cm. Pieza de enlace horizontal y vertical, para vincular estructura con mampostería y resolver los encuentros.',
     dimensions: '12 × 18 × 24 cm',
@@ -231,7 +223,6 @@ export const products: Product[] = [
     name: '18x18x24 Peine Encadenado',
     type: 'encadenado',
     application: ['encadenados', 'muros-portantes', 'cerramientos'],
-    pending: true,
     description:
       'Peine encadenado de 18 cm. Pieza de enlace para muros portantes, para resolver los encuentros entre estructuras y cerramientos.',
     dimensions: '18 × 18 × 24 cm',

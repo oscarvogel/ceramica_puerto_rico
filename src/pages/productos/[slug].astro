@@ -26,6 +26,36 @@ const waHref = `https://wa.me/${company.branches[0].whatsapp}?text=${waText}`;
 const hasData = <T,>(v: T | null | undefined): v is T =>
   v !== null && v !== undefined && v !== '';
 
+/**
+ * Ficha técnica: se listan sólo los datos disponibles. Si un dato no está
+ * cargado, la fila no se imprime (antes salía "A confirmar" o "Pendiente").
+ */
+type SpecRow = { label: string; value: string | number };
+
+const rawSpecs: (SpecRow | null)[] = [
+  hasData(product.dimensions)
+    ? { label: 'Medidas', value: product.dimensions }
+    : null,
+  hasData(product.weightKg)
+    ? { label: 'Peso unitario', value: formatKg(product.weightKg) }
+    : null,
+  hasData(product.unitsPerM2)
+    ? { label: 'Unidades por m²', value: product.unitsPerM2 }
+    : null,
+  hasData(product.palletUnits)
+    ? { label: 'Unidades por pallet', value: product.palletUnits }
+    : null,
+  hasData(product.palletWeightKg)
+    ? { label: 'Peso por pallet', value: formatKg(product.palletWeightKg) }
+    : null,
+  hasData(product.resistance)
+    ? { label: 'Resistencia', value: product.resistance }
+    : null,
+  { label: 'Aplicación', value: product.application.join(', ') },
+];
+
+const specs: SpecRow[] = rawSpecs.filter((s): s is SpecRow => s !== null);
+
 const productImage = resolveProductImage(product);
 
 const breadcrumbs = [
@@ -75,41 +105,16 @@ const productJsonLd = {
         </div>
 
         <div class="product-info">
-          {product.pending && (
-            <span class="pending">Datos técnicos pendientes de validación</span>
-          )}
           <h1>{product.name}</h1>
           <p class="lead">{product.description}</p>
 
           <dl class="specs-table">
-            <div>
-              <dt>Medidas</dt>
-              <dd>{hasData(product.dimensions) ? product.dimensions : 'A confirmar'}</dd>
-            </div>
-            <div>
-              <dt>Peso unitario</dt>
-              <dd>{hasData(product.weightKg) ? formatKg(product.weightKg) : 'A confirmar'}</dd>
-            </div>
-            <div>
-              <dt>Unidades por m²</dt>
-              <dd>{hasData(product.unitsPerM2) ? product.unitsPerM2 : 'A confirmar'}</dd>
-            </div>
-            <div>
-              <dt>Unidades por pallet</dt>
-              <dd>{hasData(product.palletUnits) ? product.palletUnits : 'A confirmar'}</dd>
-            </div>
-            <div>
-              <dt>Peso por pallet</dt>
-              <dd>{hasData(product.palletWeightKg) ? formatKg(product.palletWeightKg) : 'A confirmar'}</dd>
-            </div>
-            <div>
-              <dt>Resistencia</dt>
-              <dd>{hasData(product.resistance) ? product.resistance : 'Pendiente de ensayo'}</dd>
-            </div>
-            <div>
-              <dt>Aplicación</dt>
-              <dd>{product.application.join(', ')}</dd>
-            </div>
+            {specs.map((s) => (
+              <div>
+                <dt>{s.label}</dt>
+                <dd>{s.value}</dd>
+              </div>
+            ))}
           </dl>
 
           <div class="product-actions">
@@ -135,8 +140,8 @@ const productJsonLd = {
         <h3>Colocación</h3>
         <p>
           Recomendamos seguir las indicaciones de la ficha técnica y las normas
-          vigentes para mampostería cerámica. Próximamente publicaremos manuales
-          de colocación detallados.
+          vigentes para mampostería cerámica. Nuestro equipo técnico te acompaña
+          en la elección del modelo y en el cálculo de cantidades.
         </p>
       </article>
 

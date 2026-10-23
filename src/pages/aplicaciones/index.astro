@@ -39,7 +39,6 @@ const cards = applications.map((a) => ({
       <div style="display: flex; flex-direction: column; gap: var(--space-3); max-width: 900px;">
         {cards.map((c) => (
           <a href={`/aplicaciones/${c.id}`} class="card app-card">
-            {c.pending && <span class="pending">Pendiente de validación</span>}
             <h2>{c.title}</h2>
             <p>{c.description}</p>
             <p class="product-count">{c.productCount} producto{c.productCount === 1 ? '' : 's'}</p>

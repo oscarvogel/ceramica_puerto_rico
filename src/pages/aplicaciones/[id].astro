@@ -17,6 +17,16 @@ export function getStaticPaths() {
 const { app } = Astro.props;
 const products = productsByApplication(app.id as Application);
 
+/**
+ * Nº de columnas de la grilla de productos.
+ * La grilla automática metía 4 tarjetas por fila y dejaba una sola abajo
+ * (4 + 4 + 1). Con las columnas fijas ninguna fila queda con una sola
+ * tarjeta: 9 productos van 3+3+3, 4 van 4 en una fila, 3 van 3.
+ */
+const cols = products.length % 3 === 0 ? 3 : Math.max(products.length, 2);
+/** Con 2 productos no conviene estirarlos a media pantalla: se limitan a 420px. */
+const gridMax = products.length <= 2 ? '860px' : 'none';
+
 const breadcrumbs = [
   { name: 'Inicio', url: '/' },
   { name: 'Aplicaciones', url: '/aplicaciones' },
@@ -50,7 +60,10 @@ const breadcrumbs = [
       {products.length > 0 ? (
         <>
           <h2>Productos recomendados</h2>
-          <div class="grid grid-3">
+          <div
+            class="products-grid"
+            style={`--cols: ${cols}; --grid-max: ${gridMax};`}
+          >
             {products.map((p) => <ProductCard product={p} />)}
           </div>
         </>
@@ -85,5 +98,23 @@ const breadcrumbs = [
     border-radius: var(--radius-lg);
     text-align: center;
     border: 1px dashed var(--color-grafito-100);
+  }
+
+  /* — Grilla de productos — */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+    gap: var(--space-5);
+    max-width: var(--grid-max, none);
+    margin-inline: auto;
+  }
+  @media (max-width: 760px) {
+    .products-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: none;
+    }
+  }
+  @media (max-width: 480px) {
+    .products-grid { grid-template-columns: 1fr; }
   }
 </style>
