@@ -8,6 +8,10 @@ const SITE_URL = 'https://ceramicaptorico.com.ar';
 export default defineConfig({
   site: SITE_URL,
   base: './',
+  // El sitio declara sus URLs sin barra final (ver los `path` del SEO).
+  // El .htaccess de producción sirve esas URLs con un 200, sin el 301 que
+  // Apache hace por defecto con DirectorySlash. Si esto cambia a 'always',
+  // hay que cambiar también los `path` de cada pagina y el sitemap.
   trailingSlash: 'never',
   integrations: [
     sitemap({
