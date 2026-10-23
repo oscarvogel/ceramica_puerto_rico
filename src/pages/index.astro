@@ -1,37 +1,56 @@
 ---
 /**
- * Home — seguirá la referencia de Stitch:
- * hero · stats · propuesta de valor · catálogo destacado · descargas
- * beneficios · CTA exprés.
+ * Home — Cerámica Puerto Rico.
+ *
+ * Estructura (SPEC §22, revisada con el plan de mejora):
+ *   hero · datos · selector de uso · catálogo bento · prueba de fábrica ·
+ *   beneficios · recursos y preguntas · cotización
+ *
+ * Ritmo de superficies: anthracita → naranja → cal → cal → arena → cal →
+ * arena → anthracita. La paleta no cambia; cambia la proporción.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import ProductCard from '../components/ProductCard.astro';
+import BrickCut from '../components/BrickCut.astro';
+import PlantGallery from '../components/PlantGallery.astro';
 import { company } from '../data/company';
-import { getFeaturedProducts, products } from '../data/products';
+import { getFeaturedProducts, productTypes, products } from '../data/products';
+import { applications } from '../data/applications';
+import { faq } from '../data/faq';
 
 const featured = getFeaturedProducts();
 
+/* Las 4 líneas de producto, con su cantidad real de modelos. */
+const lineas = productTypes.map((t) => ({
+  id: t.id,
+  label: t.label,
+  total: products.filter((p) => p.type === t.id).length,
+}));
+
+/* — Datos de la franja. Todos verificados contra la empresa. — */
 const stats = [
-  { value: '+50', label: 'Años fabricando', note: 'Actividad desde 1975' },
-  { value: '100%', label: 'Producción regional', note: 'Hecho en Misiones' },
-  { value: '100%', label: 'Atención personalizada', note: 'Un interlocutor siempre' },
+  { value: 1975, label: 'Año de inicio', note: 'en Puerto Rico, Misiones' },
+  { value: products.length, label: 'Modelos en catálogo', note: 'en 4 líneas de producto' },
+  { value: 405, label: 'Unidades por palet', note: 'en el liviano 12×18×24' },
+  { value: 4, label: 'Provincias con entrega', note: 'Misiones, Corrientes, Chaco y Formosa' },
 ];
 
+/* — Propuesta de valor — */
 const valueProps = [
   {
     icon: 'patented',
-    title: 'Stock Constante',
-    points: ['Ladrillo hueco 12x18x24', 'Sin esperas de producción', 'Despacho inmediato'],
+    title: 'Stock constante',
+    points: ['Ladrillo hueco 12×18×24', 'Sin esperas de producción', 'Despacho inmediato'],
   },
   {
     icon: 'hydrophobic',
-    title: '100% Producción regional',
-    points: ['Hecho en Misiones', 'Sin intermediarios', 'Valor local'],
+    title: 'Producción regional',
+    points: ['Hecho en Misiones', 'Sin intermediarios', 'Precio de fábrica'],
   },
   {
     icon: 'invoicing',
-    title: 'Atención 100% personalizada',
+    title: 'Atención personalizada',
     points: ['Un interlocutor siempre', 'Asesoramiento en obra', 'Respuesta rápida'],
   },
   {
@@ -41,11 +60,12 @@ const valueProps = [
   },
 ];
 
+/* — Beneficios (el corte del ladrillo los explica) — */
 const benefits = [
   {
     icon: 'thermal',
     title: 'Aislación térmica y acústica',
-    desc: 'Ayudan a mantener una temperatura pareja dentro de la casa y reducen el paso de los ruidos molestos.',
+    desc: 'Las celdas del ladrillo hueco forman cámaras de aire que ayudan a mantener una temperatura pareja dentro de la casa y reducen el paso de los ruidos molestos.',
   },
   {
     icon: 'capacity',
@@ -58,16 +78,53 @@ const benefits = [
     desc: 'Requieren menor cantidad de mezcla para el pegado entre piezas.',
   },
   {
-    icon: 'engineering',
+    icon: 'fire',
     title: 'Resistencia al fuego',
     desc: 'Son materiales seguros que no se prenden fuego y protegen de las llamas.',
   },
   {
-    icon: 'invoicing',
+    icon: 'conduit',
     title: 'Pasaje de instalaciones',
     desc: 'Sus celdas internas facilitan la realización de canales para los caños de luz, agua o gas.',
   },
 ];
+
+/* — Prueba de fábrica: fotos reales de la planta — */
+const plantPhotos = [
+  {
+    src: '/images/planta/horno-pallets-1.webp',
+    alt: 'Ladrillos cerámicos apilados en el horno túnel de la planta, listos para la cocción',
+    label: 'Horno túnel',
+  },
+  {
+    src: '/images/planta/secado-estanterias.webp',
+    alt: 'Ladrillos secando en las estanterías del secadero continuo de la planta',
+    label: 'Secadero continuo',
+  },
+  {
+    src: '/images/planta/pallets-exterior-1.webp',
+    alt: 'Pallets de ladrillos enfardados con la identificación de Cerámica Puerto Rico, listos para despacho',
+    label: 'Depósito y despacho',
+  },
+  {
+    src: '/images/planta/taller-operarios.webp',
+    alt: 'Dos operarios de la planta en el taller, junto al banco de trabajo',
+    label: 'Taller de la planta',
+  },
+  {
+    src: '/images/logistica/camion-carga.webp',
+    alt: 'Camión de la empresa estacionado en la planta, listo para la carga',
+    label: 'Flota propia',
+  },
+  {
+    src: '/images/obras/ensayo-estructura.webp',
+    alt: 'Pieza de encadenado en perfil de U sobre el terreno de la planta',
+    label: 'Pieza de encadenado',
+  },
+];
+
+/* — Preguntas frecuentes para el bloque de la home — */
+const faqHome = faq.slice(0, 4);
 
 const breadcrumbs = [{ name: 'Inicio', url: '/' }];
 
@@ -85,12 +142,12 @@ const waQuote = encodeURIComponent(
   <Hero />
 
   <!-- Franja de datos -->
-  <section class="stats" aria-label="Datos destacados de la empresa">
+  <section class="stats-strip" aria-label="Datos de la empresa">
     <div class="container">
       <ul class="stats-list">
         {stats.map((s) => (
           <li class="stat">
-            <span class="stat-value">{s.value}</span>
+            <span class="stat-value mono">{s.value}</span>
             <span class="stat-label">{s.label}</span>
             <span class="stat-note">{s.note}</span>
           </li>
@@ -99,8 +156,48 @@ const waQuote = encodeURIComponent(
     </div>
   </section>
 
-  <!-- Propuesta de valor -->
+  <!-- Selector: ¿qué necesitás construir? -->
   <section class="section section--tight">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="section-eyebrow">Por donde empezar</span>
+          <h2>¿Qué necesitás construir?</h2>
+          <p class="section-intro">
+            Elegí el tipo de obra y te mostramos los ladrillos que le
+            corresponden, con sus medidas y el rendimiento por pallet.
+          </p>
+        </div>
+        <a href="/aplicaciones" class="section-head-aside">
+          Ver todas las aplicaciones
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
+
+      <ul class="use-grid">
+        {applications.map((a) => (
+          <li>
+            <a href={`/aplicaciones/${a.id}`} class="use-card">
+              <span class="use-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+              <span class="use-title">{a.title}</span>
+              <span class="use-desc">{a.description}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Propuesta de valor -->
+  <section class="section section--tight value-section">
     <div class="container">
       <ul class="value-grid">
         {valueProps.map((v) => (
@@ -132,7 +229,7 @@ const waQuote = encodeURIComponent(
     </div>
   </section>
 
-  <!-- Catálogo destacado -->
+  <!-- Catálogo destacado: bento 3 × 3 -->
   <section class="section">
     <div class="container">
       <div class="section-head">
@@ -140,47 +237,87 @@ const waQuote = encodeURIComponent(
           <span class="section-eyebrow">Catálogo de productos</span>
           <h2>Elegí el material que se ajuste a tu obra</h2>
           <p class="section-intro">
-            Ladrillos huecos, portantes y piezas especiales. Filtrá por tipo y
-            compará medidas, peso y cantidad por pallet.
+            Ladrillos huecos, portantes y piezas de encadenado. Compará
+            medidas, peso y cantidad por pallet.
           </p>
         </div>
       </div>
 
       <div class="featured-grid">
-        {featured.map((p) => <ProductCard product={p} />)}
+        <div class="featured-cta">
+          <span class="featured-cta-number" aria-hidden="true">{products.length}</span>
 
-        <a href="/productos" class="featured-cta">
-          <span class="featured-cta-label">Catálogo completo</span>
-          <strong class="featured-cta-title">Ver los {products.length} modelos</strong>
-          <span class="featured-cta-text">
-            Livianos, portantes, vistos y encadenados, con medidas, peso y
-            cantidad por pallet.
-          </span>
-          <span class="featured-cta-link">
-            Ver catálogo completo
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
-                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </span>
-        </a>
+          <div class="featured-cta-bottom">
+            <span class="featured-cta-label">Catálogo completo</span>
+            <strong class="featured-cta-title">Livianos, portantes, vistos y encadenados</strong>
+            <span class="featured-cta-text">
+              Cada modelo con sus medidas, su peso unitario y la cantidad de
+              ladrillos por pallet.
+            </span>
+
+            <ul class="featured-lines">
+              {lineas.map((l) => (
+                <li>
+                  <a href={`/productos?type=${l.id}`}>
+                    <span class="featured-line-name">{l.label}</span>
+                    <span class="featured-line-count mono">{l.total} modelos</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <a href="/productos" class="featured-cta-link">
+              Ver los {products.length} modelos
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                   stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        {featured.map((p) => <ProductCard product={p} compact />)}
       </div>
     </div>
   </section>
 
-  <!-- Beneficios -->
-  <section class="section section--tight">
+  <!-- Prueba de fábrica -->
+  <section class="section section--sand">
     <div class="container">
-      <div class="section-head section-head--center">
+      <div class="section-head">
         <div>
-          <span class="section-eyebrow">Beneficios productivos</span>
-          <h2>Ventajas de utilizar ladrillos cerámicos</h2>
+          <span class="section-eyebrow">De la arcilla a la obra</span>
+          <h2>Esto es lo que hay en la planta</h2>
+          <p class="section-intro">
+            No son fotos de banco de imágenes: son nuestro horno, nuestro
+            secadero, nuestro taller y nuestra flota.
+          </p>
         </div>
+        <a href="/historia-y-proceso" class="section-head-aside">
+          Ver el proceso completo
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
       </div>
 
-      <ul class="benefits-grid">
+      <PlantGallery items={plantPhotos} />
+    </div>
+  </section>
+
+  <!-- Beneficios: el corte del ladrillo los explica -->
+  <section class="section">
+    <div class="container benefits-layout">
+      <div class="benefits-aside">
+        <span class="section-eyebrow">Beneficios productivos</span>
+        <h2>Ventajas de utilizar ladrillos cerámicos</h2>
+        <BrickCut caption="Corte de un ladrillo hueco 12×18×24: seis celdas de 6×6 cm que atraviesan los 24 cm de largo." />
+      </div>
+
+      <ul class="benefits-list">
         {benefits.map((b) => (
-          <li class="card benefit-card">
+          <li class="benefit-item">
             <span class="benefit-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor"
                    stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
@@ -191,11 +328,51 @@ const waQuote = encodeURIComponent(
                 {b.icon === 'conduit' && <><path d="M3 8h6a3 3 0 0 1 3 3v2a3 3 0 0 0 3 3h6" /><circle cx="7" cy="8" r="2" /><circle cx="17" cy="16" r="2" /></>}
               </svg>
             </span>
-            <h3>{b.title}</h3>
-            <p>{b.desc}</p>
+            <div>
+              <h3>{b.title}</h3>
+              <p>{b.desc}</p>
+            </div>
           </li>
         ))}
       </ul>
+    </div>
+  </section>
+
+  <!-- Recursos técnicos y preguntas frecuentes -->
+  <section class="section section--sand">
+    <div class="container split-grid">
+      <div class="split-col">
+        <span class="section-eyebrow">Centro técnico</span>
+        <h2>Información para construir mejor</h2>
+        <p>
+          Fichas, documentos y consultas para el profesional que tiene que
+          definir la obra. Pedinos la documentación y te la enviamos.
+        </p>
+        <div class="split-actions">
+          <a href="/recursos-tecnicos" class="btn btn-primary">Ver recursos técnicos</a>
+          <a href="/distribuidores" class="btn btn-secondary">Dónde comprar</a>
+        </div>
+      </div>
+
+      <div class="split-col">
+        <span class="section-eyebrow">Preguntas frecuentes</span>
+        <h2>Lo que más nos preguntan</h2>
+        <ul class="faq-list">
+          {faqHome.map((f) => (
+            <li>
+              <h3>{f.q}</h3>
+              <p>{f.a}</p>
+            </li>
+          ))}
+        </ul>
+        <a href="/preguntas-frecuentes" class="split-more">
+          Ver todas las preguntas
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -286,7 +463,7 @@ const waQuote = encodeURIComponent(
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7z" />
           </svg>
-          Enviar Solicitud a Ventas
+          Enviar solicitud a ventas
         </button>
 
         <p class="cta-form-status" data-form-status aria-live="polite"></p>
@@ -314,36 +491,51 @@ const waQuote = encodeURIComponent(
 </BaseLayout>
 
 <style>
-  /* — Franja de datos — */
-  .stats {
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
-    padding-block: var(--space-6);
+  /* — Franja de datos: una tira naranja que separa el hero del contenido — */
+  .stats-strip {
+    background: var(--brand-orange);
+    color: #23150e;
+    padding-block: var(--space-5);
   }
   .stats-list {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-5);
     list-style: none;
     margin: 0;
     padding: 0;
   }
-  .stat { display: flex; flex-direction: column; gap: 0.1rem; }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-left: var(--space-4);
+    border-left: 1px solid rgba(35, 21, 14, 0.22);
+  }
+  .stat:first-child { padding-left: 0; border-left: 0; }
   .stat-value {
     font-size: var(--fs-700);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: var(--brand-rust);
-    line-height: 1.1;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
   }
   .stat-label {
     font-size: var(--fs-100);
-    font-weight: 600;
-    color: var(--brand-ink);
+    font-weight: 700;
+    letter-spacing: 0.01em;
   }
-  .stat-note { font-size: var(--fs-50); color: var(--text-soft); }
-  @media (max-width: 820px) {
-    .stats-list { grid-template-columns: repeat(2, 1fr); }
+  .stat-note {
+    font-size: var(--fs-50);
+    color: rgba(35, 21, 14, 0.72);
+    line-height: 1.45;
+  }
+  @media (max-width: 900px) {
+    .stats-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stat:nth-child(3) { padding-left: 0; border-left: 0; }
+  }
+  @media (max-width: 460px) {
+    .stats-list { grid-template-columns: 1fr; }
+    .stat { padding-left: 0; border-left: 0; }
   }
 
   /* — Encabezado de sección — */
@@ -354,100 +546,90 @@ const waQuote = encodeURIComponent(
     gap: var(--space-5);
     margin-bottom: var(--space-6);
   }
-  .section-head h2 { margin-bottom: var(--space-2); }
-  .section-head--center { justify-content: center; text-align: center; }
-  .section-head--center > div { max-width: 62ch; }
+  .section-head h2 { margin-bottom: var(--space-2); max-width: 22ch; }
   .section-intro {
     color: var(--text-muted);
     max-width: 62ch;
     margin: 0;
   }
   .section-head-aside {
-    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--brand-rust);
     font-size: var(--fs-100);
-    margin: 0;
+    font-weight: 700;
     white-space: nowrap;
+    border-bottom: 1px solid var(--accent-line);
+    padding-bottom: 2px;
   }
+  .section-head-aside:hover { color: var(--brand-deep); border-bottom-color: var(--accent); }
   @media (max-width: 760px) {
     .section-head { flex-direction: column; align-items: flex-start; }
   }
 
-  /* — Catálogo destacado —
-     Los 5 destacados + el tile de catálogo son 6 celdas: 3 por fila, dos
-     filas exactas. Antes la grilla automática daba 4 arriba y 1 abajo.
-     Ojo: el `grid-column` del padre no alcanza a los <ProductCard /> (Astro
-     scopea los estilos por componente), por eso la grilla se define con
-     columnas fijas y no con spans. */
-  .featured-grid {
+  /* — Selector de uso — */
+  .use-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-5);
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
-  @media (max-width: 980px) {
-    .featured-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 620px) {
-    .featured-grid { grid-template-columns: 1fr; }
-  }
-
-  /* — Tile de catálogo completo — */
-  .featured-cta {
+  .use-card {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: var(--space-2);
+    gap: 0.5rem;
+    height: 100%;
     padding: var(--space-5);
     background: var(--brand-ink);
     color: var(--on-dark);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--brand-ink);
-    transition: transform var(--t-fast), box-shadow var(--t-fast);
+    text-decoration: none;
+    transition: transform var(--t-base), box-shadow var(--t-base);
   }
-  .featured-cta:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+  .use-card:hover {
     color: var(--on-dark);
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
   }
-  .featured-cta-label {
-    font-size: var(--fs-50);
+  .use-arrow {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    margin-bottom: var(--space-2);
+  }
+  .use-title {
+    font-family: var(--font-display);
+    font-size: var(--fs-300);
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    color: var(--accent);
-  }
-  .featured-cta-title {
-    font-size: var(--fs-400);
-    line-height: 1.2;
+    letter-spacing: -0.015em;
     color: #fff;
   }
-  .featured-cta-text {
+  .use-desc {
     font-size: var(--fs-100);
     color: var(--on-dark-muted);
+    line-height: 1.55;
   }
-  .featured-cta-link {
-    display: inline-flex;
-    align-items: center;
-    align-self: flex-start;
-    gap: 0.4rem;
-    margin-top: var(--space-3);
-    padding: 0.45rem 0.95rem;
-    border: 1px solid var(--accent);
-    border-radius: 999px;
-    font-weight: 700;
-    color: #fff;
-    transition: background var(--t-fast), border-color var(--t-fast);
+  @media (max-width: 900px) {
+    .use-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  .featured-cta:hover .featured-cta-link {
-    background: var(--accent);
-    border-color: var(--accent);
-    text-decoration: none;
+  @media (max-width: 560px) {
+    .use-grid { grid-template-columns: 1fr; }
   }
 
   /* — Propuesta de valor — */
+  .value-section { padding-top: 0; }
   .value-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: var(--space-5);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-4);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -473,7 +655,7 @@ const waQuote = encodeURIComponent(
   }
   .value-points {
     list-style: none;
-    margin: 0;
+    margin: auto 0 0;   /* empuja la lista al pie: las 4 listas alinean */
     padding: 0;
     display: grid;
     gap: 0.35rem;
@@ -486,69 +668,244 @@ const waQuote = encodeURIComponent(
     color: var(--text-muted);
   }
   .value-points svg { color: var(--ok); flex-shrink: 0; margin-top: 3px; }
+  @media (max-width: 980px) {
+    .value-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .value-grid { grid-template-columns: 1fr; }
+  }
 
-  /* — Barra de descargas — */
-  .downloads-bar {
+  /* — Catálogo destacado: bento 3 × 3 —
+     La celda oscura ocupa 2 × 2 (4 celdas) y las 5 tarjetas de producto
+     llenan las 9 celdas restantes. Ninguna fila queda con una sola celda.
+     Ojo: el `grid-column` del padre no alcanza la raíz de <ProductCard />
+     (Astro scopea los estilos), así que el span va en un <a> que sí es
+     hijo de esta grilla. */
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  .featured-cta {
+    grid-column: span 2;
+    grid-row: span 2;
+    position: relative;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: space-between;
     gap: var(--space-5);
-    flex-wrap: wrap;
-    margin-top: var(--space-5);
-    padding: var(--space-4) var(--space-5);
-    background: var(--surface);
-    border: 1px solid var(--line);
+    padding: var(--space-6);
+    background: var(--brand-ink);
+    color: var(--on-dark);
     border-radius: var(--radius-lg);
+    border: 1px solid var(--brand-ink);
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform var(--t-fast), box-shadow var(--t-fast);
   }
-  .downloads-text {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    min-width: 0;
+  /* Misma textura de hiladas que el hero: el motivo se repite. */
+  .featured-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='232' height='96' viewBox='0 0 232 96'%3E%3Cg fill='none' stroke='%23f5f1ec' stroke-opacity='.06' stroke-width='1'%3E%3Cpath d='M0 .5h232M0 48.5h232M0 95.5h232'/%3E%3Cpath d='M58 .5v48M174 .5v48M0 48.5v47M116 48.5v47M232 48.5v47'/%3E%3C/g%3E%3C/svg%3E");
   }
-  .downloads-icon {
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0;
-    border-radius: var(--radius-md);
-    background: var(--accent-soft);
-    border: 1px solid var(--accent-line);
-    color: var(--accent);
-  }
-  .downloads-title {
-    margin: 0 0 0.15rem;
-    font-weight: 700;
-    color: var(--brand-ink);
-    font-size: var(--fs-200);
-  }
-  .downloads-sub {
-    margin: 0;
-    font-size: var(--fs-100);
-    color: var(--text-muted);
+  .featured-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
 
-  /* — Beneficios — */
-  /* 5 ventajas: 3 arriba y 2 abajo, para que no quede un recuadro solo. */
-  .benefits-grid {
+  /* La cifra grande: el dato del catálogo como elemento gráfico. */
+  .featured-cta-number {
+    font-family: var(--font-display);
+    font-size: clamp(6rem, 15vw, 12rem);
+    font-weight: 800;
+    line-height: 0.82;
+    letter-spacing: -0.055em;
+    color: rgba(245, 241, 236, 0.1);
+    user-select: none;
+  }
+
+  .featured-cta-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  /* Las 4 líneas de producto: la navegación interna del catálogo. */
+  .featured-lines {
+    list-style: none;
+    margin: var(--space-5) 0 0;
+    padding: var(--space-3) 0 0;
+    border-top: 1px solid rgba(245, 241, 236, 0.16);
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: var(--space-5);
+  }
+  .featured-lines a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 0.45rem 0;
+    color: var(--on-dark);
+    border-bottom: 1px solid transparent;
+    transition: color var(--t-fast), border-color var(--t-fast);
+  }
+  .featured-lines a:hover {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom-color: rgba(245, 241, 236, 0.22);
+  }
+  .featured-line-name { font-weight: 600; font-size: var(--fs-100); }
+  .featured-line-count { font-size: var(--fs-50); color: var(--on-dark-muted); }
+  .featured-cta-label {
+    font-size: var(--fs-50);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--accent);
+  }
+  .featured-cta-title {
+    font-family: var(--font-display);
+    font-size: var(--fs-600);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .featured-cta-text {
+    font-size: var(--fs-100);
+    color: var(--on-dark-muted);
+    max-width: 34ch;
+  }
+  .featured-cta-link {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 0.4rem;
+    margin-top: var(--space-3);
+    padding: 0.45rem 0.95rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: var(--fs-100);
+    color: #fff;
+    transition: background var(--t-fast), border-color var(--t-fast);
+  }
+  .featured-cta:hover .featured-cta-link {
+    background: var(--accent);
+    border-color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* A dos columnas el bento se deshace: el tile oscuro pasa al final y
+     ocupa el ancho, y las 6 celdas quedan en 3 filas parejas. */
+  @media (max-width: 980px) {
+    .featured-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .featured-cta { grid-column: span 2; grid-row: span 1; order: 1; }
+  }
+  @media (max-width: 620px) {
+    .featured-grid { grid-template-columns: 1fr; }
+    .featured-cta { grid-column: span 1; }
+  }
+
+  /* — Beneficios: dibujo a la izquierda, lista a la derecha — */
+  .benefits-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+  .benefits-aside h2 { margin-bottom: var(--space-5); max-width: 18ch; }
+  .benefits-list {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: grid;
+    gap: var(--space-4);
   }
-  .benefit-card {
-    grid-column: span 2;
+  .benefit-item {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--t-base), box-shadow var(--t-base);
   }
-  .benefit-card:nth-child(4),
-  .benefit-card:nth-child(5) { grid-column: span 3; }
-  .benefit-card h3 { font-size: var(--fs-200); margin: 0; line-height: 1.35; }
-  .benefit-card p { margin: 0; font-size: var(--fs-100); color: var(--text-muted); }
+  .benefit-item:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-md);
+  }
+  .benefit-item h3 {
+    font-size: var(--fs-200);
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+    line-height: 1.35;
+  }
+  .benefit-item p {
+    margin: 0;
+    font-size: var(--fs-100);
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  @media (max-width: 900px) {
+    .benefits-layout { grid-template-columns: 1fr; gap: var(--space-6); }
+    .benefits-aside { text-align: center; }
+    .benefits-aside h2 { max-width: none; }
+  }
+
+  /* — Recursos + preguntas — */
+  .split-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8);
+  }
+  .split-col h2 { font-size: var(--fs-700); margin-bottom: var(--space-3); }
+  .split-col > p {
+    color: var(--text-muted);
+    max-width: 52ch;
+    margin-bottom: var(--space-5);
+  }
+  .split-actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+  .faq-list {
+    list-style: none;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .faq-list li {
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--line);
+  }
+  .faq-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .faq-list h3 {
+    font-size: var(--fs-200);
+    font-weight: 700;
+    margin: 0 0 0.3rem;
+    line-height: 1.4;
+  }
+  .faq-list p {
+    margin: 0;
+    font-size: var(--fs-100);
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .split-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--brand-rust);
+    font-weight: 700;
+    font-size: var(--fs-100);
+    border-bottom: 1px solid var(--accent-line);
+    padding-bottom: 2px;
+  }
+  .split-more:hover { color: var(--brand-deep); border-bottom-color: var(--accent); }
+  @media (max-width: 900px) {
+    .split-grid { grid-template-columns: 1fr; gap: var(--space-7); }
+  }
 
   /* — CTA exprés — */
   .cta-block {
@@ -601,38 +958,41 @@ const waQuote = encodeURIComponent(
     border-radius: var(--radius-xl);
     padding: var(--space-6);
     color: var(--text);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--shadow-deep);
   }
   .cta-form-title {
     font-size: var(--fs-400);
     margin: 0 0 0.25rem;
     color: var(--brand-ink);
+    font-weight: 700;
   }
   .cta-form-sub {
-    margin: 0 0 var(--space-4);
+    margin: 0 0 var(--space-5);
     font-size: var(--fs-100);
     color: var(--text-muted);
   }
   .cta-fields {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
+    gap: var(--space-4);
   }
-  .field { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: var(--space-3); }
+  .field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: var(--space-4); }
   .field label {
     font-size: var(--fs-50);
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--brand-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
-  .field label span { color: var(--accent); }
+  .field label span { color: var(--brand-rust); }
   .field input,
   .field textarea {
     width: 100%;
-    padding: 0.65rem 0.75rem;
+    padding: 0.7rem 0.85rem;
     border: 1px solid var(--line-strong);
     border-radius: var(--radius-md);
-    background: var(--surface);
-    font-size: var(--fs-100);
+    background: var(--page);
+    font-size: var(--fs-200);
     transition: border-color var(--t-fast), box-shadow var(--t-fast);
   }
   .field input:focus,
@@ -641,106 +1001,32 @@ const waQuote = encodeURIComponent(
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-soft);
   }
-  .field textarea { resize: vertical; min-height: 76px; }
-  .cta-form .btn { margin-top: var(--space-2); }
-  .cta-form .btn + .btn, .cta-form .btn + .cta-form-note { margin-top: var(--space-2); }
+  .field textarea { resize: vertical; min-height: 84px; }
+  .hp {
+    position: absolute !important;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .cta-form-status {
+    margin: var(--space-3) 0;
+    font-size: var(--fs-100);
+    font-weight: 600;
+    min-height: 1.2em;
+  }
+  .cta-form-status.is-ok { color: var(--ok); }
+  .cta-form-status.is-error { color: var(--error); }
   .cta-form-note {
-    margin: var(--space-3) 0 0;
+    margin: var(--space-4) 0 0;
     font-size: var(--fs-50);
-    color: var(--text-soft);
+    color: var(--text-muted);
     text-align: center;
   }
-  .cta-form-note a { font-weight: 600; }
-  .hp { position: absolute; left: -9999px; }
-  .cta-form-status {
-    display: none;
-    align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius-md);
-    font-size: var(--fs-100);
-    margin: var(--space-3) 0 0;
-    line-height: 1.5;
-  }
-  .cta-form-status:not([data-kind=""]) { display: flex; }
-  .cta-form-status[data-kind="success"] {
-    background: #ecfdf5;
-    color: #1b7a3d;
-    border: 1px solid #a7f3d0;
-  }
-  .cta-form-status[data-kind="error"] {
-    background: #fef2f2;
-    color: var(--color-error);
-    border: 1px solid #fecaca;
-  }
-  .cta-form-status[data-kind="pending"] {
-    background: var(--color-grafito-50);
-    color: var(--color-grafito-700);
-    border: 1px solid var(--color-grafito-100);
-  }
-  .cta-form-status svg { flex-shrink: 0; }
-  .cta-form .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
-  @keyframes cta-spin { to { transform: rotate(360deg); } }
-  .cta-form .spinner { animation: cta-spin 0.8s linear infinite; }
+  .cta-form-note a { color: var(--brand-rust); font-weight: 700; }
 
-  @media (max-width: 900px) {
+  @media (max-width: 860px) {
     .cta-grid { grid-template-columns: 1fr; gap: var(--space-6); }
-    .benefits-grid { grid-template-columns: repeat(2, 1fr); }
-    .benefit-card,
-    .benefit-card:nth-child(4),
-    .benefit-card:nth-child(5) { grid-column: span 1; }
-    .benefit-card:last-child { grid-column: span 2; }
-  }
-  @media (max-width: 520px) {
-    .cta-fields { grid-template-columns: 1fr; }
-    .cta-form { padding: var(--space-5); }
-    .benefits-grid { grid-template-columns: 1fr; }
-    .benefit-card:last-child { grid-column: span 1; }
+    .cta-fields { grid-template-columns: 1fr; gap: 0; }
   }
 </style>
-
-<script>
-  // El form de la home es un POST nativo: sin JS el navegador se va a una
-  // pagina con un JSON crudo del servidor. Con JS se manda por fetch y el
-  // resultado se muestra en el mismo formulario (igual que en /contacto).
-  const form = document.querySelector<HTMLFormElement>('.cta-form');
-  const status = document.querySelector<HTMLElement>('[data-form-status]');
-  const submitBtn = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
-
-  const ICONS = {
-    pending: '<svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.2-8.55"/></svg>',
-    success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
-    error: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>',
-  };
-
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!status || !submitBtn) return;
-
-    status.dataset.kind = 'pending';
-    status.innerHTML = `${ICONS.pending}<span>Enviando tu consulta...</span>`;
-    submitBtn.disabled = true;
-
-    try {
-      const res = await fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { 'Accept': 'application/json' },
-      });
-      const json = await res.json().catch(() => ({}));
-      if (res.ok && json.ok) {
-        status.dataset.kind = 'success';
-        status.innerHTML = `${ICONS.success}<span><strong>¡Gracias!</strong> Recibimos tu consulta y te respondemos a la brevedad.</span>`;
-        form.reset();
-        status.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
-        throw new Error(json.message || 'Error del servidor');
-      }
-    } catch {
-      status.dataset.kind = 'error';
-      status.innerHTML = `${ICONS.error}<span>No pudimos enviar tu consulta. Probá de nuevo o escribinos por WhatsApp.</span>`;
-    } finally {
-      submitBtn.disabled = false;
-    }
-  });
-</script>

@@ -67,7 +67,10 @@ const localBusinessLd = {
   '@type': 'LocalBusiness',
   '@id': new URL('/#empresa', SITE_URL).toString(),
   name: SITE_NAME,
-  image: fullOgImage,
+  image: [
+    new URL('/images/hero/portada-deposito.webp', SITE_URL).toString(),
+    new URL('/images/planta/horno-pallets-1.webp', SITE_URL).toString(),
+  ],
   telephone: company.phone.tel,
   address: {
     '@type': 'PostalAddress',
@@ -76,6 +79,18 @@ const localBusinessLd = {
     addressRegion: company.address.province,
     addressCountry: company.address.country,
   },
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    opens: '07:00',
+    closes: '18:00',
+    opensMidday: '12:00',
+    closesMidday: '14:00',
+  },
+  areaServed: ['Misiones', 'Corrientes', 'Chaco', 'Formosa'].map((name) => ({
+    '@type': 'AdministrativeArea',
+    name,
+  })),
   url: SITE_URL,
 };
 
@@ -87,15 +102,6 @@ const websiteLd = {
   inLanguage: 'es-AR',
   description: SITE_DESCRIPTION,
   publisher: { '@type': 'Organization', name: SITE_NAME },
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: `${SITE_URL}/productos?q={search_term_string}`,
-    },
-    // SPEC: search interno (placeholder, se activa cuando agreguemos /buscar)
-    'query-input': 'required name=search_term_string',
-  },
 };
 
 const breadcrumbLd =
