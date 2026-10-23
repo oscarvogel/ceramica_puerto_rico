@@ -57,12 +57,16 @@ function Invoke-Ftp {
 }
 
 function Get-RemoteSizes {
-  param([string]$RemoteRoot)
+  param([string]$RemoteRoot, [string[]]$OnlyDirs = @())
   $map = @{}
   $queue = New-Object System.Collections.Queue
   $queue.Enqueue($RemoteRoot)
   while ($queue.Count -gt 0) {
     $d = $queue.Dequeue()
+    # Si se passa la lista de carpetas que se subieron, no se recorren las
+    # demas: el docroot tiene el WordPress viejo (miles de carpetas) y listarlo
+    # entero por FTP tarda media hora y carga el servidor al limite.
+    if ($OnlyDirs.Count -gt 0 -and $OnlyDirs -notcontains $d) { continue }
     $listing = Invoke-Ftp @('--ssl-reqd','--user',"$($env:FTP_USER):$($env:FTP_PASS)",'--max-time','120','-s',"$base$d")
     if (-not $listing) { continue }
     foreach ($line in $listing) {
@@ -101,8 +105,20 @@ function Send-Tree {
 
 function Test-Tree {
   param([string]$LocalRoot, [string]$RemoteRoot, [string]$Label, [string]$Skip = '')
-  $remote = Get-RemoteSizes $RemoteRoot
   $local = @(Get-ChildItem -LiteralPath $LocalRoot -Recurse -File | Where-Object { $_.Name -ne $Skip })
+  # Sólo se listan por FTP las carpetas donde hay archivos de este deploy:
+  # listar el docroot entero (con el WordPress viejo) tarda media hora y fue
+  # lo que dejó el hosting sin responder el 23/10/2026.
+  $dirs = @($RemoteRoot)
+  foreach ($f in $local) {
+    $rel = $f.FullName.Substring($LocalRoot.Length + 1) -replace '\\','/'
+    $parts = $rel -split '/'
+    for ($i = 1; $i -lt $parts.Count; $i++) {
+      $d = $RemoteRoot + (($parts[0..($i-1)]) -join '/') + '/'
+      if ($dirs -notcontains $d) { $dirs += $d }
+    }
+  }
+  $remote = Get-RemoteSizes $RemoteRoot $dirs
   $malos = @()
   foreach ($f in $local) {
     $rel = $f.FullName.Substring($LocalRoot.Length + 1) -replace '\\','/'

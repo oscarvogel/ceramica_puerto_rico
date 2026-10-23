@@ -117,6 +117,31 @@ Publicado a las 13:31. Respaldo del `.htaccess` anterior en
 raíz). El `.htaccess` de WordPress y el resto de sus archivos quedaron donde
 estaban: el sitio ya no los usa, pero siguen ahí, por si hay que volver atrás.
 
+### Cuidado: no listar el docroot entero por FTP (23/10/2026, 15:50)
+
+La verificación de tamaños (`Test-Tree`) listaba **todas** las carpetas del
+docroot para armar el mapa de archivos remotos. Como el WordPress viejo sigue
+dentro, eso son **miles de carpetas** (wp-content, wp-includes, plugins) y
+cada LIST es una conexión FTP nueva: la verificación tardó **50 minutos** y, a
+las 15:50, **el hosting dejó de responder** (21/80/443 caídos, sin ping, y un
+proxy externo también daba 522). El sitio quedó publicado y verificado a las
+15:47, pero el servidor se quedó sin responder y hubo que esperar que lo
+levanten.
+
+Ahora `Test-Tree` calcula **sólo las carpetas donde hay archivos de este
+deploy** y las lista; nunca recorre el resto del docroot. Lo mismo aplica para
+cualquier script de FTP: no listar el árbol entero del hosting.
+
+Además, `deploy.ps1` sube **archivo por archivo** (una conexión por archivo) y
+verifica tamaños. Subir varios archivos en una sola conexión truncaba archivos
+a 0 bytes sin que el código HTTP lo delatara.
+
+**Si el hosting vuelve a caerse:** no es un problema del contenido (está en git
+y en `main`), es del servidor. Se comprueba con `Test-NetConnection
+a1000380.ferozo.com -Port 443` y con un proxy externo; si el panel de Ferozo
+muestra la cuenta suspendida por exceso de conexiones, hay que desbloquearla o
+avisar al hosting.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
