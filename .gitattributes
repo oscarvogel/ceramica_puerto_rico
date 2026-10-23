@@ -1,0 +1,11 @@
+# El deploy es por FTPS desde la copia de trabajo, asi que los archivos que
+# interpretan el servidor tienen que ir con LF, no con CRLF.
+*.htaccess text eol=lf
+*.sh text eol=lf
+
+# Los .webp, .mp4 y .jpg son binarios: que git no los toque.
+*.webp binary
+*.mp4 binary
+*.jpg binary
+*.jpeg binary
+*.png binary
