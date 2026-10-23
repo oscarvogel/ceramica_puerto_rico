@@ -27,6 +27,19 @@ header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: same-origin');
 
+// — Configuracion del servidor (fuera del repo) —
+// En produccion el hosting tiene PHPMailer en /vendor y la configuracion
+// SMTP en api/config.php (archivo que NO va al repo, ver .gitignore).
+// Si no estan, el endpoint cae en modo log (ver mas abajo).
+$vendorAutoload = __DIR__ . '/../vendor/autoload.php';
+if (is_file($vendorAutoload)) {
+    require_once $vendorAutoload;
+}
+$configFile = __DIR__ . '/config.php';
+if (is_file($configFile)) {
+    require_once $configFile;
+}
+
 // — Sólo POST —
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -79,8 +92,9 @@ $message  = required('message', 10, 2000);
 $errors = [];
 if (!$name)              $errors[] = 'nombre';
 if (!$email)             $errors[] = 'email';
-if (!$profile)           $errors[] = 'perfil';
 if (!$message)           $errors[] = 'mensaje';
+// 'profile' NO es obligatorio: el formulario de la home no lo manda.
+// El select de /contacto si lo exige, asi que ahi llega siempre.
 
 if ($errors) {
     http_response_code(422);
@@ -122,7 +136,7 @@ $body = sprintf(
     "Nueva consulta desde el sitio web\n\n" .
     "Nombre: %s\nEmail: %s\nTeléfono: %s\nPerfil: %s\nLocalidad: %s\n\n" .
     "Mensaje:\n%s\n",
-    $name, $email, $phone ?: '(no informado)', $profile,
+    $name, $email, $phone ?: '(no informado)', $profile ?: '(no informado)',
     $locality ?: '(no informada)', $message
 );
 
@@ -133,7 +147,12 @@ $mode = 'log';
 
 if (defined('CERAMICA_SMTP_ENABLED') && CERAMICA_SMTP_ENABLED === true) {
     try {
-        // Requiere PHPMailer
+        // Requiere PHPMailer y todas las constantes de SMTP.
+        $requeridas = ['CERAMICA_SMTP_HOST', 'CERAMICA_SMTP_PORT', 'CERAMICA_SMTP_USER', 'CERAMICA_SMTP_PASS'];
+        $faltan = array_filter($requeridas, fn($c) => !defined($c));
+        if ($faltan) {
+            throw new RuntimeException('Faltan constantes de SMTP: ' . implode(', ', $faltan));
+        }
         if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
             throw new RuntimeException('PHPMailer no está instalado.');
         }
@@ -144,10 +163,11 @@ if (defined('CERAMICA_SMTP_ENABLED') && CERAMICA_SMTP_ENABLED === true) {
         $mail->SMTPAuth   = true;
         $mail->Username   = CERAMICA_SMTP_USER;
         $mail->Password   = CERAMICA_SMTP_PASS;
-        $mail->SMTPSecure = CERAMICA_SMTP_SECURE ?? 'tls';
+        $mail->SMTPSecure = defined('CERAMICA_SMTP_SECURE') ? CERAMICA_SMTP_SECURE : 'tls';
         $mail->CharSet    = 'UTF-8';
 
-        $mail->setFrom(CERAMICA_SMTP_FROM ?? CERAMICA_SMTP_USER, 'Web Cerámica Puerto Rico');
+        $from = defined('CERAMICA_SMTP_FROM') ? CERAMICA_SMTP_FROM : CERAMICA_SMTP_USER;
+        $mail->setFrom($from, 'Web Cerámica Puerto Rico');
         $mail->addAddress($recipient);
         $mail->addReplyTo($email, $name);
 
@@ -162,14 +182,31 @@ if (defined('CERAMICA_SMTP_ENABLED') && CERAMICA_SMTP_ENABLED === true) {
 }
 
 if (!$sent) {
-    // Modo desarrollo: log a archivo
-    $logFile = __DIR__ . '/../logs/contact.log';
-    if (!is_dir(dirname($logFile))) @mkdir(dirname($logFile), 0755, true);
-    @file_put_contents(
-        $logFile,
-        sprintf("[%s] %s\n%s\n%s\n\n", date('c'), $subject, $body, str_repeat('-', 40)),
-        FILE_APPEND
-    );
+    // Modo sin SMTP: la consulta se escribe en un log.
+    //
+    // OJO: el log tiene datos de clientes (nombre, email, telefono), asi que
+    // NO se escribe dentro del docroot: se busca primero una carpeta fuera
+    // de public_html. Antes este codigo escribia en api/../logs/, que es
+    // la raiz del sitio, y por lo tanto era descargable desde el navegador.
+    $logDir = null;
+    foreach ([
+        dirname(__DIR__, 2) . '/logs',          // fuera del docroot
+        sys_get_temp_dir() . '/ceramica_logs',  // temporal del servidor
+        __DIR__ . '/logs',                      // ultimo recurso
+    ] as $candidate) {
+        if (!is_dir($candidate) && !@mkdir($candidate, 0750, true) && !is_dir($candidate)) {
+            continue;
+        }
+        if (is_writable($candidate)) { $logDir = $candidate; break; }
+    }
+    if ($logDir !== null) {
+        $logFile = $logDir . '/contact.log';
+        @file_put_contents(
+            $logFile,
+            sprintf("[%s] %s\n%s\n%s\n\n", date('c'), $subject, $body, str_repeat('-', 40)),
+            FILE_APPEND
+        );
+    }
     $sent = true; // aceptamos en dev
 }
 

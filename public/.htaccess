@@ -1,29 +1,80 @@
-# Redirecciones de las URLs que se sacaron del sitio (oct/2026).
+# Ceramica Puerto Rico - configuracion de Apache para el sitio estatico.
 #
-# El sitio se publica por FTPS en un hosting compartido: este archivo se
-# copia tal cual desde public/ a la raiz del deploy. Si el hosting corre
-# nginx, estas mismas reglas van en el vhost.
+# Este archivo viaja desde public/ a la raiz del docroot del hosting
+# (public_html en Hostmar) y reemplaza al .htaccess de WordPress.
 #
-# Todo va dentro de <IfModule> para que, si mod_rewrite no esta activo,
-# el archivo quede inerte en vez de romper el sitio con un 500.
+# ASCII a proposito: Apache lee los .htaccess como ISO-8859-1, asi que los
+# acentos en los comentarios se verian rotos.
+#
+# Los ajustes de directorio van fuera de <IfModule> a proposito: si el
+# hosting no los aceptara, el sitio caeria en un 500 en cada pedido. El
+# hosting los acepta (es la misma combinacion que ya usa la vista previa
+# que esta en /revision-20261008/).
+
+# No listar el contenido de las carpetas.
+Options -Indexes
+
+# La home es index.html. Sin esto gana el index.php de WordPress, que
+# sigue en la raiz y muestra la pantalla de "pagina en construccion".
+DirectoryIndex index.html
+
+# Apache, con DirectorySlash (por defecto), redirige con un 301 toda
+# carpeta que no termina en barra: /productos/12x18x24-liviano -> 301 ->
+# /productos/12x18x24-liviano/. El sitio declara sus URLs SIN barra final
+# (canonical, sitemap y links internos), asi que sin esto cada navegacion
+# interna costaba un 301 y el canonical apuntaba a una URL que redirige.
+#
+# Con DirectorySlash Off, Apache sirve el index.html de la carpeta en la
+# URL pedida: la que declara el sitio responde con 200.
+# Probado en este hosting (oct/2026): /prueba-url/productos/x -> 200.
+#
+# Requiere Apache 2.4.39 o superior. Si el servidor no lo soportara,
+# Apache daria 500 en cada pedido: por eso conviene comprobarlo al
+# publicar (que el sitio responda, no que de un error).
+DirectorySlash Off
+
+# 404 propio del sitio.
+ErrorDocument 404 /404.html
+
+# No servir archivos de configuracion ni credenciales.
+# En el hosting hay un .env con la clave de SMTP de la version anterior
+# de la web (/nueva_web/.env): con esta regla deja de ser descargable.
+<IfModule mod_authz_core.c>
+  <FilesMatch "(^|\.)(env|ini|credentials|htpasswd)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
   # La solapa /empresa ahora es /historia-y-proceso.
-  RewriteRule ^empresa$ /historia-y-proceso [R=301,L]
+  RewriteRule ^empresa/?$ /historia-y-proceso [R=301,L]
 
   # La aplicacion "techos" salio del catalogo.
-  RewriteRule ^aplicaciones/techos$ /aplicaciones [R=301,L]
+  RewriteRule ^aplicaciones/techos/?$ /aplicaciones [R=301,L]
 
   # Fichas que la empresa confirmo que no se producen, o que cambiaron de
   # nombre dentro del catalogo real.
-  RewriteRule ^productos/8x18x24-comun$ /productos/8x18x24-liviano [R=301,L]
-  RewriteRule ^productos/18x18x24$ /productos/18x18x24-liviano [R=301,L]
-  RewriteRule ^productos/8x13x20-visto$ /productos/10x15x24-visto [R=301,L]
-  RewriteRule ^productos/peine-encadenado$ /productos/12x18x24-peine [R=301,L]
-  RewriteRule ^productos/6x12x24-rejilla$ /productos [R=301,L]
-  RewriteRule ^productos/6x12x24-2tubos$ /productos [R=301,L]
-  RewriteRule ^productos/18x18x12-5-artistico$ /productos [R=301,L]
-  RewriteRule ^productos/losa-sapo-43x12x20$ /productos [R=301,L]
+  RewriteRule ^productos/8x18x24-comun/?$ /productos/8x18x24-liviano [R=301,L]
+  RewriteRule ^productos/18x18x24/?$ /productos/18x18x24-liviano [R=301,L]
+  RewriteRule ^productos/8x13x20-visto/?$ /productos/10x15x24-visto [R=301,L]
+  RewriteRule ^productos/peine-encadenado/?$ /productos/12x18x24-peine [R=301,L]
+  RewriteRule ^productos/6x12x24-rejilla/?$ /productos [R=301,L]
+  RewriteRule ^productos/6x12x24-2tubos/?$ /productos [R=301,L]
+  RewriteRule ^productos/18x18x12-5-artistico/?$ /productos [R=301,L]
+  RewriteRule ^productos/losa-sapo-43x12x20/?$ /productos [R=301,L]
+
+  # El sitio declara sus URLs sin barra final (/productos/12x18x24-liviano)
+  # y asi estan el canonical, el sitemap y todos los links internos.
+  # Apache, en cambio, con DirectorySlash redirige esa URL con un 301 a
+  # /productos/12x18x24-liviano/. Estas reglas sirven el index.html de la
+  # carpeta directamente, sin redireccion, para que la URL que declara el
+  # sitio sea la que responde con 200.
+  #
+  # La sustitucion es relativa: asi el archivo funciona igual en la raiz
+  # del docroot que dentro de una subcarpeta (por ejemplo, una revision).
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME}/index.html -f
+  RewriteRule ^(.+)$ $1/index.html [L]
 </IfModule>
