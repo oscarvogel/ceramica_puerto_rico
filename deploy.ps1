@@ -31,6 +31,9 @@ $dist   = Join-Path $repo 'dist'
 $vendor = Join-Path $repo 'vendor'
 $curl   = "$env:SystemRoot\System32\curl.exe"
 
+# Pausa entre conexiones FTP, en milisegundos (0 = sin pausa).
+$script:FtpPausaMs = if ($env:FTP_PAUSA_MS) { [int]$env:FTP_PAUSA_MS } else { 300 }
+
 # --- credenciales ---
 $credFile = Join-Path $repo '.ferozo-credentials'
 if ($credFile -and (Test-Path -LiteralPath $credFile)) {
@@ -95,6 +98,10 @@ function Send-Tree {
     Invoke-Ftp @('--ssl-reqd','--user',"$($env:FTP_USER):$($env:FTP_PASS)",'--max-time','180','-s','--ftp-create-dirs','-T',$f.FullName,"$base$RemoteRoot$rel") | Out-Null
     if ($LASTEXITCODE -ne 0) { $fallos += $rel }
     if ($i % 25 -eq 0) { Write-Host "    $i/$($files.Count)" }
+    # Pausa entre conexiones: en un hosting compartido, encadenar conexiones FTP
+    # sin descanso es lo que puede hacer que el hosting corte la cuenta. Con
+    # 300 ms el deploy de ~300 archivos tarda un minuto más y no se acciona.
+    Start-Sleep -Milliseconds $script:FtpPausaMs
   }
   if ($fallos.Count -gt 0) {
     Write-Host "    ERROR: $($fallos.Count) archivos no se pudieron subir:"
