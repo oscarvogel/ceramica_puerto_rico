@@ -2,7 +2,10 @@
 /**
  * Recursos técnicos — SPEC §19.
  * Centraliza fichas técnicas, catálogo, manuales, CAD/BIM.
- * Hasta validar los assets reales, mostramos estructura con placeholders.
+ *
+ * Los PDF todavía no están subidos al hosting: cada recurso se pide desde el
+ * formulario de contacto y la fábrica lo envía por email. Por eso el botón no
+ * es una descarga directa sino un "Solicitar".
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 
@@ -17,10 +20,10 @@ const sections = [
     title: 'Fichas técnicas',
     description: 'Una por modelo con medidas, peso, rendimiento, ensayos y aplicación.',
     items: [
-      { name: 'Ladrillo Hueco 8 — Ficha técnica', pending: true },
-      { name: 'Ladrillo Hueco 12 — Ficha técnica', pending: true },
-      { name: 'Ladrillo Hueco 18 — Ficha técnica', pending: true },
-      { name: 'Ladrillo Portante — Ficha técnica', pending: true },
+      { name: 'Ladrillo Hueco 8 — Ficha técnica', note: 'Medidas, peso y cantidad por pallet.' },
+      { name: 'Ladrillo Hueco 12 — Ficha técnica', note: 'Medidas, peso y cantidad por pallet.' },
+      { name: 'Ladrillo Hueco 18 — Ficha técnica', note: 'Medidas, peso y cantidad por pallet.' },
+      { name: 'Ladrillo Portante — Ficha técnica', note: 'Medidas, peso y cantidad por pallet.' },
     ],
   },
   {
@@ -28,7 +31,7 @@ const sections = [
     title: 'Catálogo',
     description: 'Línea completa en PDF.',
     items: [
-      { name: 'Catálogo general 2026', pending: true },
+      { name: 'Catálogo general', note: 'Las cuatro líneas de producto en un solo archivo.' },
     ],
   },
   {
@@ -36,17 +39,17 @@ const sections = [
     title: 'Manuales y recomendaciones',
     description: 'Buenas prácticas de colocación, almacenamiento y obra.',
     items: [
-      { name: 'Recomendaciones de colocación', pending: true },
-      { name: 'Almacenamiento y transporte', pending: true },
+      { name: 'Recomendaciones de colocación', note: 'Guía de colocación en obra.' },
+      { name: 'Almacenamiento y transporte', note: 'Cómo apilar, cubrir y trasladar los pallets.' },
     ],
   },
   {
     id: 'descargas',
     title: 'Descargas',
-    description: 'Documentos normativos, ensayos y certificaciones una vez validados.',
+    description: 'Documentos normativos, ensayos y certificaciones.',
     items: [
-      { name: 'Ensayos de resistencia', pending: true },
-      { name: 'Certificaciones (pendiente de validación)', pending: true },
+      { name: 'Ensayos de resistencia', note: 'Resultados de ensayo por modelo.' },
+      { name: 'Certificaciones', note: 'Documentación normativa de la fábrica.' },
     ],
   },
 ];
@@ -89,10 +92,10 @@ const sections = [
           {s.items.map((item) => (
             <li class="card">
               <div class="resource-meta">
-                {item.pending && <span class="pending">Pendiente</span>}
                 <h3>{item.name}</h3>
+                <p class="resource-note">{item.note}</p>
               </div>
-              <a href="#" class="btn btn-secondary" aria-disabled="true">Descargar</a>
+              <a href="/contacto" class="btn btn-secondary">Solicitar</a>
             </li>
           ))}
         </ul>
@@ -153,4 +156,9 @@ const sections = [
     gap: var(--space-1);
   }
   .resource-meta h3 { margin: 0; font-size: var(--fs-300); }
+  .resource-note {
+    margin: 0;
+    color: var(--color-grafito-500);
+    font-size: var(--fs-100);
+  }
 </style>

@@ -7,7 +7,6 @@
 export interface FaqItem {
   q: string;
   a: string;
-  pending?: boolean;
 }
 
 export const faq: FaqItem[] = [
@@ -17,8 +16,7 @@ export const faq: FaqItem[] = [
   },
   {
     q: '¿Cuántos ladrillos necesito por metro cuadrado?',
-    a: 'Depende del modelo: el rendimiento se calcula según el espesor del ladrillo y el tipo de pared. Cuando valides el modelo y las dimensiones de tu obra, podemos ayudarte con el cálculo. Próximamente publicaremos una calculadora.',
-    pending: true,
+    a: 'Depende del modelo y del tipo de pared: el rendimiento se calcula según el espesor del ladrillo y la forma de colocación. En cada ficha de producto tenés medidas, peso unitario y cantidad por pallet. Pasanos las medidas de tu obra y te ayudamos con el cálculo.',
   },
   {
     q: '¿Qué diferencia hay entre ladrillo portante y de cerramiento?',
@@ -26,8 +24,7 @@ export const faq: FaqItem[] = [
   },
   {
     q: '¿Cuántos ladrillos trae un pallet?',
-    a: 'La cantidad varía según el modelo. Una vez validado el catálogo, esta información estará disponible en cada ficha técnica.',
-    pending: true,
+    a: 'Depende del modelo: entre 268 y 515 unidades por pallet según el formato y el tipo de ladrillo. En la ficha de cada producto figura la cantidad exacta del modelo.',
   },
   {
     q: '¿Cómo almacenar ladrillos correctamente?',
@@ -39,8 +36,7 @@ export const faq: FaqItem[] = [
   },
   {
     q: '¿Dónde puedo comprar Cerámica Puerto Rico?',
-    a: 'Directamente en nuestra planta de Puerto Rico, Misiones. Próximamente publicaremos la lista completa de distribuidores habilitados en la sección correspondiente.',
-    pending: true,
+    a: 'Directamente en nuestra planta de Puerto Rico, Misiones. También podés pedir presupuesto por WhatsApp o por el formulario de contacto y te indicamos dónde retirar el material o cómo coordinar la entrega.',
   },
   {
     q: '¿Hacen entregas? ¿Qué zonas atienden?',

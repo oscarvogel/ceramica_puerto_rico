@@ -46,11 +46,6 @@ const faqJsonLd = faq.map((f) => ({ q: f.q, a: f.a }));
           </summary>
           <div class="faq-content">
             <p>{item.a}</p>
-            {item.pending && (
-              <p class="faq-pending-note">
-                Esta respuesta se completará con datos validados por la empresa.
-              </p>
-            )}
           </div>
         </details>
       ))}
@@ -130,15 +125,6 @@ const faqJsonLd = faq.map((f) => ({ q: f.q, a: f.a }));
     to { opacity: 1; transform: none; }
   }
   .faq-item p { color: var(--color-grafito-500); margin: 0 0 var(--space-3); }
-  .faq-pending-note {
-    font-size: var(--fs-50);
-    color: var(--color-terracota-700);
-    background: var(--color-terracota-50);
-    padding: 0.5rem 0.75rem;
-    border-radius: var(--radius-sm);
-    display: inline-block;
-    margin: 0;
-  }
 
   .cta-block {
     display: flex;

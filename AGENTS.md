@@ -30,6 +30,31 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
   "Extracción y acopio" is the video titled "PROCESO DE PREPARACIÓN DE LA TIERRA").
   The Drive links in the PDF are public: `https://drive.google.com/uc?export=download&id=<ID>`.
 
+## Content rules (verified oct/2026)
+
+- **The site must not show "Pendiente de validación" nor "A confirmar" anywhere.**
+  The client asked for those marks to be removed (23/10/2026). A value that the
+  company has not confirmed stays `null` in the data file and the row is simply
+  **not rendered** — never a placeholder text. This applies to the product card
+  (specs box), the product page (technical table), `/recursos-tecnicos`,
+  `/preguntas-frecuentes` and `/aplicaciones`.
+- **The global `.pending` class no longer exists** (removed from `global.css`).
+  Don't bring it back to flag unconfirmed data: leave the value `null` and
+  document it in the data file.
+- **The Centro Técnico has no downloadable files yet**: it lists the documents the
+  factory has and the button says "Solicitar" (to `/contacto`). When the client
+  sends the PDFs, turn that button into a real download.
+
+### Layout rules
+
+- **No grid may leave a single card alone in the last row.** The home's featured
+  section is 5 products + 1 "Catálogo completo" tile = 6 cells = 3×2 exactly.
+  `/aplicaciones/[id]` derives the column count from the number of products
+  (`--cols`): 9 → 3+3+3, 4 → one row of 4, 2 → 2 columns capped at 860px.
+- **Astro scopes styles per component**: a `grid-column: span 2` in the parent's
+  `<style>` does NOT reach the root element of a child component (`<ProductCard />`).
+  Use fixed column counts instead of spans, or `:global()`.
+
 ## Deployment
 
 The site goes to the client's shared hosting (Hostmar) over **FTPS**, and the domain

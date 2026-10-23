@@ -9,7 +9,6 @@ export interface ApplicationGroup {
   id: Application;
   title: string;
   description: string;
-  pending?: boolean;
 }
 
 export const applications: ApplicationGroup[] = [

@@ -8,7 +8,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import ProductCard from '../components/ProductCard.astro';
 import { company } from '../data/company';
-import { getFeaturedProducts } from '../data/products';
+import { getFeaturedProducts, products } from '../data/products';
 
 const featured = getFeaturedProducts();
 
@@ -144,17 +144,26 @@ const waQuote = encodeURIComponent(
             compará medidas, peso y cantidad por pallet.
           </p>
         </div>
-        <a href="/productos" class="section-head-link">
-          Ver catálogo completo
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
-               stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-        </a>
       </div>
 
-      <div class="grid grid-3">
+      <div class="featured-grid">
         {featured.map((p) => <ProductCard product={p} />)}
+
+        <a href="/productos" class="featured-cta">
+          <span class="featured-cta-label">Catálogo completo</span>
+          <strong class="featured-cta-title">Ver los {products.length} modelos</strong>
+          <span class="featured-cta-text">
+            Livianos, portantes, vistos y encadenados, con medidas, peso y
+            cantidad por pallet.
+          </span>
+          <span class="featured-cta-link">
+            Ver catálogo completo
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </span>
+        </a>
       </div>
     </div>
   </section>
@@ -353,16 +362,6 @@ const waQuote = encodeURIComponent(
     max-width: 62ch;
     margin: 0;
   }
-  .section-head-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    white-space: nowrap;
-    font-weight: 600;
-    font-size: var(--fs-100);
-    color: var(--brand-rust);
-  }
-  .section-head-link:hover { color: var(--brand-deep); }
   .section-head-aside {
     color: var(--text-muted);
     font-size: var(--fs-100);
@@ -371,6 +370,77 @@ const waQuote = encodeURIComponent(
   }
   @media (max-width: 760px) {
     .section-head { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* — Catálogo destacado —
+     Los 5 destacados + el tile de catálogo son 6 celdas: 3 por fila, dos
+     filas exactas. Antes la grilla automática daba 4 arriba y 1 abajo.
+     Ojo: el `grid-column` del padre no alcanza a los <ProductCard /> (Astro
+     scopea los estilos por componente), por eso la grilla se define con
+     columnas fijas y no con spans. */
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+  @media (max-width: 980px) {
+    .featured-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 620px) {
+    .featured-grid { grid-template-columns: 1fr; }
+  }
+
+  /* — Tile de catálogo completo — */
+  .featured-cta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--brand-ink);
+    color: var(--on-dark);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--brand-ink);
+    transition: transform var(--t-fast), box-shadow var(--t-fast);
+  }
+  .featured-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: var(--on-dark);
+  }
+  .featured-cta-label {
+    font-size: var(--fs-50);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--accent);
+  }
+  .featured-cta-title {
+    font-size: var(--fs-400);
+    line-height: 1.2;
+    color: #fff;
+  }
+  .featured-cta-text {
+    font-size: var(--fs-100);
+    color: var(--on-dark-muted);
+  }
+  .featured-cta-link {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 0.4rem;
+    margin-top: var(--space-3);
+    padding: 0.45rem 0.95rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    font-weight: 700;
+    color: #fff;
+    transition: background var(--t-fast), border-color var(--t-fast);
+  }
+  .featured-cta:hover .featured-cta-link {
+    background: var(--accent);
+    border-color: var(--accent);
+    text-decoration: none;
   }
 
   /* — Propuesta de valor — */
