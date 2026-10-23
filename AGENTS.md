@@ -33,8 +33,9 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 ## Deployment
 
 The site goes to the client's shared hosting (Hostmar) over **FTPS**, and the domain
-`ceramicaptorico.com.ar` points to the docroot root. `deploy.cmd` does the whole
-thing: build, backup, upload, verify.
+`ceramicaptorico.com.ar` points to the docroot root. `deploy.cmd` (un atajo a
+`deploy.ps1`) hace todo: build, respaldo, subida, **verificación de tamaños** y
+comprobación del sitio.
 
 ```
 set FTP_HOST=a1000380.ferozo.com
@@ -44,30 +45,52 @@ set FTP_DIR=/
 deploy.cmd
 ```
 
-The credentials are **not** in the repo: they live in `.ferozo-credentials` (ignored
-by git). The server is ProFTPD with `AUTH SSL` on port 21 (explicit FTPS; port 990 is
-closed), so the upload needs `--ssl-reqd`.
+Las credenciales **no** están en el repo: viven en `.ferozo-credentials` (ignorado
+por git). El servidor es ProFTPD con `AUTH SSL` en el puerto 21 (FTPS explícito;
+el 990 está cerrado), así que la subida necesita `--ssl-reqd`.
 
-- **The `.htaccess` is uploaded last, on purpose.** Until it is up, the server keeps
-  WordPress's `.htaccess` and the site does not change. If the new one were to break
-  something, the previous one is still there to fall back to.
-- **`DirectorySlash Off` is what makes the URLs work.** The site declares its URLs
-  without a trailing slash (`/productos/12x18x24-liviano`), and Apache's default
-  `DirectorySlash` answers those with a 301 to the slashed version. `DirectorySlash
-  Off` (Apache 2.4.39+) makes Apache serve the folder's `index.html` at the URL as
-  asked, so the canonical, the sitemap and the internal links all match what the
-  server answers with a 200. Verified on this host: `/prueba-url/productos/x` → 200.
-- **`DirectoryIndex index.html`** is also needed: `index.php` from WordPress is still
-  in the docroot and would otherwise win the home page.
-- **The contact form needs PHPMailer and a server-side config.** `api/contact.php`
-  loads `../vendor/autoload.php` and `api/config.php`, neither of which is in the
-  repo. `api/config.php` is ignored by git; `vendor/` comes from the copy that was
-  already on the hosting (`nueva_web/vendor/`). Without them the endpoint still
-  answers `ok`, but only writes to the log instead of sending the mail.
-- **The log with the clients' data is written outside the docroot.** The endpoint
-  looks for `../logs/` (i.e. `/home/<user>/logs/`), then the server's temp dir, and
-  only as a last resort `api/logs/`. Writing it inside the docroot would make the
-  names, emails and phones downloadable from the browser.
+- **Los archivos van de a uno, no en lotes.** Subiendo 60 archivos en una sola
+  conexión de curl, el servidor dejó varios con **0 bytes** (por ejemplo
+  `index.html`), y eso **no se ve en el código HTTP**: un archivo vacío responde
+  200 igual y la página se ve en blanco. Por eso `deploy.ps1` sube archivo por
+  archivo y después compara el tamaño de cada archivo remoto con el local y
+  resubive los que no coinciden. La verificación tiene que mirar el **tamaño**,
+  no el status.
+- **El `.htaccess` se sube al final, a propósito.** Hasta que no está, el
+  servidor sigue con el de WordPress y el sitio no cambia. Si el nuevo fuera a
+  romper algo, el anterior sigue ahí para volver atrás.
+- **`DirectorySlash Off` es lo que hace que funcionen las URLs.** El sitio
+  declara sus URLs sin barra final (`/productos/12x18x24-liviano`) y Apache, con
+  `DirectorySlash` por defecto, responde a esas con un 301 a la versión con
+  barra. `DirectorySlash Off` (Apache 2.4.39+) hace que Apache sirva el
+  `index.html` de la carpeta en la URL pedida. Verificado en este host:
+  `/prueba-url/productos/x` → 200.
+- **`DirectoryIndex index.html`** también hace falta: `index.php` de WordPress
+  sigue en el docroot y si no, gana él.
+- **`vendor/` está bloqueado** (`RewriteRule ^vendor/ - [F,L]`): solo lo usa PHP
+  con `require`, no se sirve por HTTP.
+- **El formulario necesita PHPMailer y una configuración en el servidor.**
+  `api/contact.php` carga `../vendor/autoload.php` y `api/config.php`, que no
+  están en el repo. El `vendor/` se baja del propio hosting (la copia que
+  quedó en `nueva_web/vendor/`) y el `config.php` se arma con las constantes
+  SMTP. Sin ellos el endpoint responde `ok`, pero escribe a un log en vez de
+  mandar el mail.
+- **El log con los datos de los clientes se escribe fuera del docroot.** El
+  endpoint busca `../logs/` (o sea `/home/<usuario>/logs/`), después el temporal
+  del servidor y solo como último recurso `api/logs/`. Dentro del docroot sería
+  descargable desde el navegador.
+- **El hosting tiene un WAF delante.** Después de muchos pedidos seguidos
+  (un rastreo, por ejemplo) devuelve una página de desafío con JavaScript en vez
+  del sitio. Un navegador real la resuelve; `curl` se queda trabado. Con un
+  rastreo hay que ir con cuidado: con cientos de pedidos, el WAF empieza a
+  responder el desafío.
+
+### Deploy hecho (23/10/2026)
+
+Publicado a las 13:31. Respaldo del `.htaccess` anterior en
+`/revision-20261023-1328/.htaccess` (para volver atrás, subir ese archivo a la
+raíz). El `.htaccess` de WordPress y el resto de sus archivos quedaron donde
+estaban: el sitio ya no los usa, pero siguen ahí, por si hay que volver atrás.
 
 ## Documentation
 

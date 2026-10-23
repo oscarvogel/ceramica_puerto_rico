@@ -65,6 +65,9 @@ ErrorDocument 404 /404.html
   RewriteRule ^productos/18x18x12-5-artistico/?$ /productos [R=301,L]
   RewriteRule ^productos/losa-sapo-43x12x20/?$ /productos [R=301,L]
 
+  # El vendor/ (PHPMailer) solo lo usa PHP con require: no se sirve por HTTP.
+  RewriteRule ^vendor/ - [F,L]
+
   # El sitio declara sus URLs sin barra final (/productos/12x18x24-liviano)
   # y asi estan el canonical, el sitemap y todos los links internos.
   # Apache, en cambio, con DirectorySlash redirige esa URL con un 301 a
