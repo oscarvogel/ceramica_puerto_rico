@@ -36,3 +36,10 @@ export const FALLBACK_RATIO = {
   card: 420 / 300,
   detail: 720 / 500,
 } as const;
+
+/**
+ * Formatea un peso con dos decimales y coma decimal, como lo anotó la
+ * empresa: 3,10 kg · 4,54 kg · 4,00 kg.
+ */
+export const formatKg = (value: number) =>
+  `${value.toFixed(2).replace('.', ',')} kg`;

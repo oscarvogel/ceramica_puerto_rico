@@ -51,6 +51,14 @@ export const company = {
   },
   whatsappSales: '5493743473702',
 
+  // Teléfonos de las distintas áreas (indicados por la empresa, oct/2026)
+  areas: [
+    { id: 'ventas', label: 'Ventas', display: '+54 9 3743 47-3702', tel: '+5493743473702' },
+    { id: 'compras', label: 'Compras', display: '+54 9 3743 45-3033', tel: '+5493743453033' },
+    { id: 'cobranzas', label: 'Cobranzas', display: '+54 9 3743 54-1627', tel: '+5493743541627' },
+    { id: 'rrhh', label: 'Recursos Humanos', display: '+54 9 3743 41-5920', tel: '+5493743415920' },
+  ],
+
   // Horario de atención — confirmado por la empresa (publicaciones oct/2026).
   // Jornada partida: por la mañana y por la tarde.
   hours: {
@@ -72,15 +80,8 @@ export const company = {
       whatsapp: '5493743473702',
       hours: 'Lunes a viernes, 7 a 12 hs y 14 a 18 hs',
     },
-    {
-      slug: 'corralon-puerto-iguazu',
-      name: 'Corralón Puerto Iguazú',
-      pending: true,
-      pendingFields: ['dirección', 'teléfono', 'horarios'],
-      locality: 'Puerto Iguazú',
-      province: 'Misiones',
-      // Anunciado en 2023 — verificar vigencia
-    },
+    // El corralón de Puerto Iguazú fue cerrado (confirmado por la empresa
+    // en "INFORME SITIO WEB.docx", oct/2026): no se publica.
   ] satisfies Branch[],
 
   // Canales digitales
@@ -92,6 +93,7 @@ export const company = {
   email: {
     sales: 'ventas@ceramicaptorico.com.ar',
     general: 'info@ceramicaptorico.com.ar',
+    rrhh: 'rrhhceramicaptorico@gmail.com',
     pending: true,
   },
 

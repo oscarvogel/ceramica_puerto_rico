@@ -13,10 +13,9 @@ import { getFeaturedProducts } from '../data/products';
 const featured = getFeaturedProducts();
 
 const stats = [
-  { value: '+35', label: 'Años fabricando', note: 'Actividad desde 1975' },
+  { value: '+50', label: 'Años fabricando', note: 'Actividad desde 1975' },
   { value: '100%', label: 'Producción regional', note: 'Hecho en Misiones' },
-  { value: 'IRAM', label: 'Norma regional', note: 'Ensayos y trazabilidad' },
-  { value: '24–48h', label: 'Despacho a obra', note: 'Logística propia' },
+  { value: '100%', label: 'Atención personalizada', note: 'Un interlocutor siempre' },
 ];
 
 const valueProps = [
@@ -27,13 +26,13 @@ const valueProps = [
   },
   {
     icon: 'hydrophobic',
-    title: 'Precio de Fábrica',
-    points: ['Compra directa', 'Presupuesto sin cargo', 'Factura a nombre propio'],
+    title: '100% Producción regional',
+    points: ['Hecho en Misiones', 'Sin intermediarios', 'Valor local'],
   },
   {
     icon: 'invoicing',
-    title: 'Acompañamos tu Obra',
-    points: ['Desde los cimientos', 'Asesoramiento en obra', 'Un interlocutor siempre'],
+    title: 'Atención 100% personalizada',
+    points: ['Un interlocutor siempre', 'Asesoramiento en obra', 'Respuesta rápida'],
   },
   {
     icon: 'logistics',
@@ -44,24 +43,29 @@ const valueProps = [
 
 const benefits = [
   {
-    icon: 'clay',
-    title: 'Confiable',
-    desc: 'Producto cocido y controlado en cada partida. Misma calidad en la primera y en la última entrega.',
+    icon: 'thermal',
+    title: 'Aislación térmica y acústica',
+    desc: 'Ayudan a mantener una temperatura pareja dentro de la casa y reducen el paso de los ruidos molestos.',
   },
   {
     icon: 'capacity',
-    title: 'Eficiente',
-    desc: 'Dimensiones uniformes y fácil ejecución. Formatos que simplifican el cómputo y aceleran la obra.',
+    title: 'Mayor velocidad de construcción',
+    desc: 'Al ser más grandes y livianos que el ladrillo común, rinden más por metro cuadrado y se colocan con mayor rapidez.',
   },
   {
-    icon: 'truck',
-    title: 'Puntual',
-    desc: 'Logística propia con camiones propios. Llegamos cuando dijimos, y descargamos en obra.',
+    icon: 'clay',
+    title: 'Ahorro de material',
+    desc: 'Requieren menor cantidad de mezcla para el pegado entre piezas.',
   },
   {
     icon: 'engineering',
-    title: 'Precio de fábrica',
-    desc: 'Comprás directo a la planta, sin intermediarios. Presupuesto sin cargo y respuesta rápida.',
+    title: 'Resistencia al fuego',
+    desc: 'Son materiales seguros que no se prenden fuego y protegen de las llamas.',
+  },
+  {
+    icon: 'invoicing',
+    title: 'Pasaje de instalaciones',
+    desc: 'Sus celdas internas facilitan la realización de canales para los caños de luz, agua o gas.',
   },
 ];
 
@@ -137,7 +141,7 @@ const waQuote = encodeURIComponent(
           <h2>Elegí el material que se ajuste a tu obra</h2>
           <p class="section-intro">
             Ladrillos huecos, portantes y piezas especiales. Filtrá por tipo y
-            compará medidas, rendimiento y rendimiento por palet.
+            compará medidas, peso y cantidad por pallet.
           </p>
         </div>
         <a href="/productos" class="section-head-link">
@@ -152,25 +156,6 @@ const waQuote = encodeURIComponent(
       <div class="grid grid-3">
         {featured.map((p) => <ProductCard product={p} />)}
       </div>
-
-      <div class="downloads-bar">
-        <div class="downloads-text">
-          <span class="downloads-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor"
-                 stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
-              <path d="M14 3v5h5M9 13h6M9 17h4" />
-            </svg>
-          </span>
-          <div>
-            <p class="downloads-title">Fichas Técnicas &amp; Ensayos de Rotura (PDF)</p>
-            <p class="downloads-sub">
-              Documentación completa para directores de obra, cálculo estructural y colocación.
-            </p>
-          </div>
-        </div>
-        <span class="pending">Documento pendiente</span>
-      </div>
     </div>
   </section>
 
@@ -180,11 +165,7 @@ const waQuote = encodeURIComponent(
       <div class="section-head section-head--center">
         <div>
           <span class="section-eyebrow">Beneficios productivos</span>
-          <h2>Ventajas Cerámica Puerto Rico</h2>
-          <p class="section-intro">
-            Más de tres décadas abasteciendo obra civil, viviendas unifamiliares
-            y edificios de la región.
-          </p>
+          <h2>Ventajas de utilizar ladrillos cerámicos</h2>
         </div>
       </div>
 
@@ -194,10 +175,11 @@ const waQuote = encodeURIComponent(
             <span class="benefit-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor"
                    stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                {b.icon === 'clay' && <><path d="M3 8l9-5 9 5-9 5-9-5z" /><path d="M3 8v8l9 5 9-5V8" /><path d="M12 13v8" /></>}
+                {b.icon === 'thermal' && <><path d="M4 20V10l8-6 8 6v10" /><path d="M8 14a2 2 0 0 1 2-2 2 2 0 0 1 2 2 2 2 0 0 1 2-2 2 2 0 0 1 2 2" /><path d="M8 18a2 2 0 0 1 2-2 2 2 0 0 1 2 2 2 2 0 0 1 2-2 2 2 0 0 1 2 2" /></>}
                 {b.icon === 'capacity' && <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></>}
-                {b.icon === 'truck' && <><path d="M2 8h12v8H2z" /><path d="M14 11h4l3 3v2h-7z" /><circle cx="6" cy="18" r="1.8" /><circle cx="17" cy="18" r="1.8" /></>}
-                {b.icon === 'engineering' && <><path d="M4 20V9l8-6 8 6v11" /><path d="M9 20v-6h6v6" /><path d="M4 13h16" /></>}
+                {b.icon === 'clay' && <><path d="M3 8l9-5 9 5-9 5-9-5z" /><path d="M3 8v8l9 5 9-5V8" /><path d="M12 13v8" /></>}
+                {b.icon === 'fire' && <><path d="M12 3s5 4.5 5 9a5 5 0 0 1-10 0c0-2 1-3.5 1-3.5S9 11 10 11c0-3 2-5 2-8z" /><path d="M12 21a3 3 0 0 0 3-3c0-1.5-1.5-3-1.5-3S12 17 12 18a1 1 0 0 1-1 1" /></>}
+                {b.icon === 'conduit' && <><path d="M3 8h6a3 3 0 0 1 3 3v2a3 3 0 0 0 3 3h6" /><circle cx="7" cy="8" r="2" /><circle cx="17" cy="16" r="2" /></>}
               </svg>
             </span>
             <h3>{b.title}</h3>
@@ -326,7 +308,7 @@ const waQuote = encodeURIComponent(
   }
   .stats-list {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--space-5);
     list-style: none;
     margin: 0;
@@ -473,15 +455,23 @@ const waQuote = encodeURIComponent(
   }
 
   /* — Beneficios — */
+  /* 5 ventajas: 3 arriba y 2 abajo, para que no quede un recuadro solo. */
   .benefits-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(6, 1fr);
     gap: var(--space-5);
     list-style: none;
     margin: 0;
     padding: 0;
   }
-  .benefit-card { display: flex; flex-direction: column; gap: var(--space-3); }
+  .benefit-card {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .benefit-card:nth-child(4),
+  .benefit-card:nth-child(5) { grid-column: span 3; }
   .benefit-card h3 { font-size: var(--fs-200); margin: 0; line-height: 1.35; }
   .benefit-card p { margin: 0; font-size: var(--fs-100); color: var(--text-muted); }
 
@@ -590,9 +580,16 @@ const waQuote = encodeURIComponent(
 
   @media (max-width: 900px) {
     .cta-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+    .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+    .benefit-card,
+    .benefit-card:nth-child(4),
+    .benefit-card:nth-child(5) { grid-column: span 1; }
+    .benefit-card:last-child { grid-column: span 2; }
   }
   @media (max-width: 520px) {
     .cta-fields { grid-template-columns: 1fr; }
     .cta-form { padding: var(--space-5); }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .benefit-card:last-child { grid-column: span 1; }
   }
 </style>

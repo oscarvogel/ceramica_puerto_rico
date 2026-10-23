@@ -8,6 +8,7 @@
 import type { Product } from '../data/products';
 import ProductMedia from './ProductMedia.astro';
 import { company } from '../data/company';
+import { formatKg } from '../lib/productImage';
 
 interface Props {
   product: Product;
@@ -38,7 +39,7 @@ const specs = [
     label: 'Rendimiento',
     value: product.unitsPerM2 ? `${product.unitsPerM2} un/m²` : 'A confirmar',
   },
-  { label: 'Peso', value: product.weightKg ? `${product.weightKg} kg` : 'A confirmar' },
+  { label: 'Peso', value: product.weightKg ? formatKg(product.weightKg) : 'A confirmar' },
   {
     label: 'Palet',
     value: product.palletUnits ? `${product.palletUnits} unidades` : 'A confirmar',

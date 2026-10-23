@@ -7,7 +7,7 @@ import ProductMedia from '../../components/ProductMedia.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { products } from '../../data/products';
 import { company } from '../../data/company';
-import { resolveProductImage } from '../../lib/productImage';
+import { resolveProductImage, formatKg } from '../../lib/productImage';
 
 export function getStaticPaths() {
   return products.map((product) => ({
@@ -23,7 +23,8 @@ const waText = encodeURIComponent(
 );
 const waHref = `https://wa.me/${company.branches[0].whatsapp}?text=${waText}`;
 
-const hasData = (v: unknown) => v !== null && v !== undefined && v !== '';
+const hasData = <T,>(v: T | null | undefined): v is T =>
+  v !== null && v !== undefined && v !== '';
 
 const productImage = resolveProductImage(product);
 
@@ -87,7 +88,7 @@ const productJsonLd = {
             </div>
             <div>
               <dt>Peso unitario</dt>
-              <dd>{hasData(product.weightKg) ? `${product.weightKg} kg` : 'A confirmar'}</dd>
+              <dd>{hasData(product.weightKg) ? formatKg(product.weightKg) : 'A confirmar'}</dd>
             </div>
             <div>
               <dt>Unidades por m²</dt>
@@ -99,7 +100,7 @@ const productJsonLd = {
             </div>
             <div>
               <dt>Peso por pallet</dt>
-              <dd>{hasData(product.palletWeightKg) ? `${product.palletWeightKg} kg` : 'A confirmar'}</dd>
+              <dd>{hasData(product.palletWeightKg) ? formatKg(product.palletWeightKg) : 'A confirmar'}</dd>
             </div>
             <div>
               <dt>Resistencia</dt>
@@ -154,7 +155,7 @@ const productJsonLd = {
           <ul class="aside-links">
             <li><a href="/recursos-tecnicos">Centro técnico</a></li>
             <li><a href="/aplicaciones">Aplicaciones</a></li>
-            <li><a href="/distribuidores">Distribuidores</a></li>
+            <li><a href="/historia-y-proceso">Historia y proceso</a></li>
           </ul>
         </div>
       </aside>

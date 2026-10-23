@@ -38,13 +38,6 @@ export const applications: ApplicationGroup[] = [
       'Encadenados horizontales y verticales con piezas tipo U para vincular estructura y mampostería.',
   },
   {
-    id: 'techos',
-    title: 'Techos',
-    description:
-      'Elementos cerámicos para techos si corresponden a la línea. Confirmá disponibilidad con la empresa.',
-    pending: true,
-  },
-  {
     id: 'viviendas',
     title: 'Viviendas',
     description:
