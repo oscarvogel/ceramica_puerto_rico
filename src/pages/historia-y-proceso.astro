@@ -84,8 +84,8 @@ const stages: Stage[] = [
       <span class="section-eyebrow">Historia y proceso productivo</span>
       <h1>Cómo se hace un ladrillo de Cerámica Puerto Rico</h1>
       <p class="page-hero-sub">
-        Más de 50 años fabricando en Puerto Rico, Misiones. Acá va el recorrido
-        completo: de la arcilla en el campo al ladrillo apilado en el depósito.
+        Nuestra historia y el proceso de fabricación, etapa por etapa: de la
+        arcilla en el campo al ladrillo apilado en el depósito.
       </p>
     </div>
   </section>
@@ -98,21 +98,114 @@ const stages: Stage[] = [
           <span class="section-eyebrow">Nuestra historia</span>
           <h2>Más de 50 años construyendo juntos</h2>
           <p>
-            Cerámica Puerto Rico comunica actividad industrial desde 1975. La
-            planta de Puerto Rico, Misiones, produce ladrillos cerámicos huecos
+            Nuestra empresa nace en 1975, dedicada a la fabricación de ladrillos
+            macizos. Impulsados por el crecimiento y la innovación, en 1992
+            incorporamos la fabricación de ladrillos cerámicos, ampliando
+            nuestra oferta y respondiendo a las nuevas exigencias del mercado de
+            la construcción.
+          </p>
+          <p>
+            En 1998 llevamos adelante una importante ampliación de nuestras
+            instalaciones fabriles, sentando las bases para el desarrollo
+            tecnológico que vendría después. En 2004 marcamos un hito en nuestra
+            historia con la instalación de un secadero continuo y horno túnel,
+            modernizando nuestro proceso productivo para garantizar mayor
+            eficiencia y calidad.
+          </p>
+          <p>
+            El crecimiento nos llevó a expandirnos territorialmente y en 2007
+            inauguramos nuestra sucursal en Puerto Tirol, provincia del Chaco. En
+            2008 se llevó a cabo la instalación de una prensa con una capacidad de
+            producción de 70 toneladas por día, fortaleciendo nuestra capacidad
+            para atender la creciente demanda del mercado.
+          </p>
+          <p>
+            En 2012 concretamos una nueva y significativa ampliación de nuestra
+            planta, con la instalación de un segundo secadero continuo y un
+            segundo horno túnel, consolidando nuestra capacidad productiva y
+            reafirmando nuestro compromiso con la industria regional. En 2016
+            dimos un paso más hacia la automatización y optimización de nuestros
+            procesos con la instalación de un brazo robot para la carga de adobes
+            que salen del secadero sobre vagonetas que ingresan al horno para el
+            quemado de los ladrillos, aumentando la precisión y reduciendo
+            tiempos de producción.
+          </p>
+          <p>
+            En 2026 continuamos innovando con la instalación de un secadero de
+            aserrín, mejorando uno de los insumos clave para el sector de quema, lo
+            que nos permite aumentar la eficiencia y reducir costos.
+          </p>
+          <p class="history-quote">
+            «Más de cuatro décadas de trabajo, inversión y compromiso con la
+            construcción.»
+          </p>
+          <p>
+            La planta de Puerto Rico, Misiones, produce ladrillos cerámicos huecos
             y portantes para obras de toda la región: corralones, constructoras,
             viviendas y edificios.
           </p>
-          <p>
-            <strong>Estamos completando esta cronología con los hitos de la
-            empresa.</strong> Si tenés material de la historia de la fábrica,
-            envianoselo por WhatsApp y lo incorporamos.
+          <p class="history-note">
+            <strong>Nos falta un dato de esta cronología:</strong> los nombres de
+            los fundadores. Si la empresa los tiene, envianoselos por WhatsApp y
+            los incorporamos.
           </p>
         </div>
         <ul class="timeline">
           <li>
             <span class="timeline-year">1975</span>
-            <span class="timeline-text">Inicio de la actividad industrial de la empresa.</span>
+            <span class="timeline-text">
+              Inicia la empresa, dedicada a la fabricación de ladrillos macizos.
+            </span>
+          </li>
+          <li>
+            <span class="timeline-year">1992</span>
+            <span class="timeline-text">
+              Comienza la fabricación de ladrillos cerámicos.
+            </span>
+          </li>
+          <li>
+            <span class="timeline-year">1998</span>
+            <span class="timeline-text">
+              Se amplían las instalaciones de la fábrica.
+            </span>
+          </li>
+          <li>
+            <span class="timeline-year">2004</span>
+            <span class="timeline-text">
+              Se instala un secadero continuo y un horno túnel.
+            </span>
+          </li>
+          <li>
+            <span class="timeline-year">2007</span>
+            <span class="timeline-text">
+              Inauguración de la sucursal en Puerto Tirol, Chaco.
+            </span>
+          </li>
+          <li>
+            <span class="timeline-year">2008</span>
+            <span class="timeline-text">
+              Instalación de una prensa con capacidad de 70 toneladas por día.
+            </span>
+          </li>
+          <li>
+            <span class="timeline-year">2012</span>
+            <span class="timeline-text">
+              Nueva ampliación de la planta: segundo secadero continuo y segundo
+              horno túnel.
+            </span>
+          </li>
+          <li>
+            <span class="timeline-year">2016</span>
+            <span class="timeline-text">
+              Brazo robot para la carga de adobes del secadero al horno.
+            </span>
+          </li>
+          <li>
+            <span class="timeline-year">2026</span>
+            <span class="timeline-text">
+              Secadero de aserrín, para mejorar un insumo clave del sector de
+              quema.
+            </span>
           </li>
           <li>
             <span class="timeline-year">Hoy</span>
@@ -207,6 +300,19 @@ const stages: Stage[] = [
   .history-grid p {
     color: var(--color-grafito-700);
     max-width: 58ch;
+  }
+  .history-quote {
+    font-size: var(--fs-200);
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--color-terracotta-600);
+    border-left: 3px solid var(--color-terracotta-500);
+    padding-left: var(--space-4);
+    margin-block: var(--space-5) !important;
+  }
+  .history-note {
+    font-size: var(--fs-100);
+    color: var(--color-grafito-500) !important;
   }
   @media (max-width: 800px) {
     .history-grid { grid-template-columns: 1fr; gap: var(--space-6); }

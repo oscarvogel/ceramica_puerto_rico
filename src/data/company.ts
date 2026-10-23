@@ -80,15 +80,8 @@ export const company = {
       whatsapp: '5493743473702',
       hours: 'Lunes a viernes, 7 a 12 hs y 14 a 18 hs',
     },
-    {
-      slug: 'corralon-puerto-iguazu',
-      name: 'Corralón Puerto Iguazú',
-      pending: true,
-      pendingFields: ['dirección', 'teléfono', 'horarios'],
-      locality: 'Puerto Iguazú',
-      province: 'Misiones',
-      // Anunciado en 2023 — verificar vigencia
-    },
+    // El corralón de Puerto Iguazú fue cerrado (confirmado por la empresa
+    // en "INFORME SITIO WEB.docx", oct/2026): no se publica.
   ] satisfies Branch[],
 
   // Canales digitales
