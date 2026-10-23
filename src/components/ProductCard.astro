@@ -12,9 +12,12 @@ import { formatKg } from '../lib/productImage';
 
 interface Props {
   product: Product;
+  /** Versión corta para la grilla de la home: sin descripción, con menos
+   *  datos y un solo botón. La ficha completa vive en /productos/[slug]. */
+  compact?: boolean;
 }
 
-const { product } = Astro.props;
+const { product, compact = false } = Astro.props;
 
 const typeLabels: Record<string, string> = {
   portante: 'Material: Portante',
@@ -39,21 +42,30 @@ const wallThickness = product.dimensions
  */
 type Spec = { label: string; value: string };
 
-const specs: Spec[] = [
-  product.dimensions ? { label: 'Dimensiones', value: product.dimensions } : null,
-  product.unitsPerM2
-    ? { label: 'Rendimiento', value: `${product.unitsPerM2} un/m²` }
-    : null,
-  product.weightKg ? { label: 'Peso', value: formatKg(product.weightKg) } : null,
-  product.palletUnits
-    ? { label: 'Palet', value: `${product.palletUnits} unidades` }
-    : null,
-].filter((s): s is Spec => s !== null);
+const specs: Spec[] = (
+  compact
+    ? [
+        product.dimensions ? { label: 'Medidas', value: product.dimensions } : null,
+        product.palletUnits
+          ? { label: 'Palet', value: `${product.palletUnits} un.` }
+          : null,
+      ]
+    : [
+        product.dimensions ? { label: 'Dimensiones', value: product.dimensions } : null,
+        product.unitsPerM2
+          ? { label: 'Rendimiento', value: `${product.unitsPerM2} un/m²` }
+          : null,
+        product.weightKg ? { label: 'Peso', value: formatKg(product.weightKg) } : null,
+        product.palletUnits
+          ? { label: 'Palet', value: `${product.palletUnits} unidades` }
+          : null,
+      ]
+).filter((s): s is Spec => s !== null);
 
 const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${product.dimensions})` : ''}.`;
 ---
 
-<article class="product-card">
+<article class:list={['product-card', { 'product-card--compact': compact }]}>
   <a class="product-media" href={`/productos/${product.slug}`} tabindex="-1" aria-hidden="true">
     <span class="tag tag--solid">{typeLabels[product.type] ?? 'Material'}</span>
     {product.resistance && <span class="tag tag--soft">{product.resistance}</span>}
@@ -72,7 +84,7 @@ const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${
       <a href={`/productos/${product.slug}`}>{product.name}</a>
     </h3>
 
-    <p class="product-desc">{product.description}</p>
+    {!compact && <p class="product-desc">{product.description}</p>}
 
     <dl class="product-specs">
       {specs.map((s) => (
@@ -92,16 +104,18 @@ const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${
       >
         Cotizar Ahora
       </a>
-      <a
-        href={`tel:${company.phone.tel}`}
-        class="product-call"
-        aria-label={`Llamar al ${company.phone.display}`}
-      >
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
-        </svg>
-      </a>
+      {!compact && (
+        <a
+          href={`tel:${company.phone.tel}`}
+          class="product-call"
+          aria-label={`Llamar al ${company.phone.display}`}
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg>
+        </a>
+      )}
     </div>
   </div>
 </article>
@@ -230,6 +244,20 @@ const waText = `Hola, quiero cotizar ${product.name}${product.dimensions ? ` (${
     padding-top: var(--space-3);
   }
   .product-cta { flex: 1; }
+
+  /* — Versión compacta (grilla de la home) — */
+  .product-card--compact .product-title { font-size: var(--fs-300); }
+  .product-card--compact .product-specs {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin: var(--space-2) 0 0;
+    padding: var(--space-3);
+  }
+  .product-card--compact .product-spec dd {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
   .product-call {
     display: grid;
     place-items: center;

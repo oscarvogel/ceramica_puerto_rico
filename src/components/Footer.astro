@@ -13,7 +13,8 @@ const catalogLinks = [
   { href: '/productos?type=visto', label: 'Ladrillos Vistos' },
   { href: '/productos?type=liviano', label: 'Ladrillos Livianos' },
   { href: '/productos?type=encadenado', label: 'Peine Encadenado' },
-  { href: '/historia-y-proceso', label: 'Historia y Proceso' },
+  { href: '/aplicaciones', label: 'Aplicaciones' },
+  { href: '/productos', label: 'Ver catálogo completo' },
 ];
 ---
 
@@ -103,18 +104,21 @@ const catalogLinks = [
       </ul>
       <ul class="footer-legal">
         <li><a href="/historia-y-proceso">Industria Misionera</a></li>
-        <li><a href="/recursos-tecnicos">Términos de Despacho</a></li>
-        <li><a href="/recursos-tecnicos">Política de Calidad</a></li>
+        <li><a href="/distribuidores">Distribuidores</a></li>
+        <li><a href="/recursos-tecnicos">Recursos técnicos</a></li>
+        <li><a href="/preguntas-frecuentes">Preguntas frecuentes</a></li>
       </ul>
     </div>
   </div>
 </footer>
 
 <style>
+  /* El footer cierra en anthracita: el sitio alterna superficies claras y
+     oscuras para que la página tenga profundidad y no sea un plano crema. */
   .site-footer {
-    background: var(--surface);
-    color: var(--text-muted);
-    border-top: 1px solid var(--line);
+    background: var(--brand-ink);
+    color: var(--on-dark-muted);
+    border-top: 1px solid rgba(245, 241, 236, 0.14);
     padding-block: var(--space-8) var(--space-5);
     font-size: var(--fs-100);
   }
@@ -129,14 +133,16 @@ const catalogLinks = [
   .footer-desc { font-size: var(--fs-100); line-height: 1.65; margin-bottom: var(--space-4); }
   .footer-contact { margin: 0; }
   .footer-contact a {
-    color: var(--brand-ink);
+    color: #fff;
     font-weight: 700;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: var(--fs-200);
   }
-  .footer-contact a:hover { color: var(--brand-rust); }
+  .footer-contact a:hover { color: var(--accent); }
 
   .footer-col h4 {
-    color: var(--brand-ink);
+    color: #fff;
     font-size: var(--fs-100);
     font-weight: 700;
     text-transform: uppercase;
@@ -146,35 +152,45 @@ const catalogLinks = [
   .footer-col ul { list-style: none; margin: 0; padding: 0; }
   .footer-col li { margin-bottom: var(--space-3); }
 
-  .footer-col a { color: var(--text-muted); font-size: var(--fs-100); }
-  .footer-col a:hover { color: var(--brand-rust); }
+  .footer-col a { color: var(--on-dark-muted); font-size: var(--fs-100); }
+  .footer-col a:hover { color: var(--accent); }
 
   .footer-places li { display: flex; flex-direction: column; gap: 0.2rem; }
   .footer-place-title {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    color: var(--brand-ink);
+    color: #fff;
     font-weight: 600;
     font-size: var(--fs-100);
   }
   .footer-place-title svg { color: var(--accent); }
-  .footer-place-text { color: var(--text-muted); font-size: var(--fs-50); line-height: 1.6; }
+  .footer-place-text { color: var(--on-dark-muted); font-size: var(--fs-50); line-height: 1.6; }
 
   .footer-cta-text { font-size: var(--fs-100); line-height: 1.6; margin-bottom: var(--space-4); }
   .footer-cta-actions { display: grid; gap: var(--space-2); }
   .footer-cta-actions .btn { font-size: var(--fs-100); }
+  /* Sobre anthracita, el botón secundario necesita su propio contraste. */
+  .footer-cta-actions .btn-secondary {
+    color: #fff;
+    border-color: rgba(245, 241, 236, 0.35);
+  }
+  .footer-cta-actions .btn-secondary:hover {
+    background: #fff;
+    color: var(--brand-ink);
+    border-color: #fff;
+  }
 
   .footer-bottom {
     margin-top: var(--space-7);
     padding-top: var(--space-5);
-    border-top: 1px solid var(--line);
+    border-top: 1px solid rgba(245, 241, 236, 0.14);
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: var(--space-4);
     flex-wrap: wrap;
-    color: var(--text-soft);
+    color: var(--on-dark-muted);
     font-size: var(--fs-50);
   }
   .footer-bottom p { margin: 0; }
@@ -196,13 +212,15 @@ const catalogLinks = [
     text-transform: uppercase;
     letter-spacing: 0.07em;
     font-weight: 600;
-    color: var(--text-soft);
+    color: var(--on-dark-muted);
   }
   .footer-areas a {
-    color: var(--brand-ink);
-    font-weight: 600;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
   }
-  .footer-areas a:hover { color: var(--brand-rust); }
+  .footer-areas a:hover { color: var(--accent); }
   .footer-legal {
     display: flex;
     flex-wrap: wrap;
@@ -211,8 +229,8 @@ const catalogLinks = [
     margin: 0;
     padding: 0;
   }
-  .footer-legal a { color: var(--text-soft); }
-  .footer-legal a:hover { color: var(--brand-rust); }
+  .footer-legal a { color: var(--on-dark-muted); }
+  .footer-legal a:hover { color: var(--accent); }
 
   @media (max-width: 1000px) {
     .footer-grid { grid-template-columns: 1fr 1fr; }

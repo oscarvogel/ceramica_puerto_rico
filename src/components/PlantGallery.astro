@@ -1,0 +1,127 @@
+---
+/**
+ * PlantGallery.astro — prueba de fábrica.
+ *
+ * La investigación B2B dice que el sitio industrial es la herramienta con la
+ * que el comprador técnico verifica que la empresa existe y produce. En este
+ * caso el material YA estaba entregado por el cliente: doce fotos de planta,
+ * logística y piezas que no se usaban en ninguna parte del sitio.
+ *
+ * Cada `alt` describe lo que se ve realmente en la foto.
+ */
+interface Props {
+  items: { src: string; alt: string; label: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="plant-grid">
+  {items.map((item, i) => (
+    <li class:list={['plant-cell', { 'plant-cell--main': i === 0 }]}>
+      <figure class="plant-figure">
+        <img
+          class="plant-photo"
+          src={item.src}
+          alt={item.alt}
+          width="900"
+          height="675"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="plant-label">{item.label}</figcaption>
+      </figure>
+    </li>
+  ))}
+</ul>
+
+<style>
+  /* Grilla 3 × 3: la primera foto ocupa 2 × 2 y ancla la composición.
+     Las 8 celdas restantes se llenan con las otras 5 fotos.
+     Ninguna fila queda con una celda sola. */
+  .plant-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, auto);
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .plant-cell--main {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  /* La proporción va en la figura. No se le pone `height: 100%`: la
+     relación con `aspect-ratio` hace que la fila colapse. La celda grande
+     mide 2 × 2, así que su relación es la misma que la de una celda normal
+     y las filas quedan parejas. */
+  .plant-figure {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--surface-alt);
+  }
+
+  .plant-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--t-base);
+  }
+  .plant-figure:hover .plant-photo { transform: scale(1.04); }
+
+  /* Las fotos entran escalonadas al llegar la galería a pantalla.
+     CSS puro, sin JavaScript. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .plant-cell {
+        animation: plant-in auto linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 30%;
+      }
+      .plant-cell:nth-child(2) { animation-range: entry 3% entry 33%; }
+      .plant-cell:nth-child(3) { animation-range: entry 6% entry 36%; }
+      .plant-cell:nth-child(4) { animation-range: entry 9% entry 39%; }
+      .plant-cell:nth-child(5) { animation-range: entry 12% entry 42%; }
+      .plant-cell:nth-child(6) { animation-range: entry 15% entry 45%; }
+    }
+  }
+  @keyframes plant-in {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* Rótulo sobre la foto: el mismo recurso que la ficha del hero. */
+  .plant-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: var(--space-6) var(--space-4) var(--space-3);
+    background: linear-gradient(180deg, transparent, rgba(12, 8, 6, 0.82));
+    color: #fff;
+    font-size: var(--fs-100);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.35;
+  }
+
+  @media (max-width: 980px) {
+    .plant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .plant-cell--main { grid-column: span 2; grid-row: span 1; }
+    /* La última foto ocupa el ancho completo para no dejar una celda sola. */
+    .plant-cell:last-child { grid-column: span 2; }
+  }
+
+  @media (max-width: 560px) {
+    .plant-grid { grid-template-columns: 1fr; }
+    .plant-cell--main,
+    .plant-cell:last-child { grid-column: span 1; }
+  }
+</style>

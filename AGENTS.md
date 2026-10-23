@@ -19,11 +19,27 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
   `trailingSlash: 'never'`, and the preview server does not resolve the
   extensionless paths. To look at the built site, serve `dist/` with a static
   server that maps `/ruta` to `dist/ruta/index.html`.
-- **Full-page screenshots come out with blank sections.** `BaseLayout.astro` adds a
-  `.reveal` class and reveals it with an `IntersectionObserver`, and product images
-  are `loading="lazy"`. Before capturing, force `document.querySelectorAll('.reveal')
-  .forEach(el => el.classList.add('is-visible'))`, set `img[loading="lazy"]` to
-  `eager`, scroll the page, and only then take the screenshot.
+- **Full-page screenshots come out with blank sections.** Las animaciones de
+  entrada son CSS puro (`animation-timeline: view()`), así que lo que está por
+  debajo del pliegue queda en `opacity: 0` hasta que entra en pantalla, y las
+  fotos de producto van con `loading="lazy"`. Para capturar: scrollear la
+  página entera (o usar `window.scrollTo` con `scrollBehavior = 'auto'`, porque
+  el sitio tiene `scroll-behavior: smooth`), poner las imágenes en `eager` y
+  recién ahí tomar la captura. **No hay que forzar más `is-visible`: esa clase
+  ya no existe.**
+- **El atajo `animation:` rompe las animaciones de scroll.** El atajo deja
+  `animation-duration` en `0s`, y con un timeline de scroll hace falta `auto`
+  explícito: `animation: fade-up auto linear both;` + `animation-timeline:
+  view();`. Sin el `auto`, el contenido queda invisible.
+- **Las fuentes están auto-hospedadas** en `public/fonts/` (Archivo, Inter e
+  IBM Plex Mono, subconjunto latin, woff2). **No volver a los links de Google
+  Fonts**: agregan dos requests a terceros en el camino crítico y ralentizan
+  el primer pintado. Para agregar una tipografía, se baja el woff2 y se declara
+  el `@font-face` en `global.css`.
+- **El bloque `.reveal` ya no se inyecta solo.** Antes `BaseLayout.astro` le
+  ponía la clase a todas las secciones; ahora es explícito en el markup y
+  sólo lo llevan los tres bloques que lo piden (franja de datos, bento del
+  catálogo y galería de planta).
 - **The company's correction PDF has crossed references.** In
   "correcciones página web.pdf" the link for "Vistos 10x15x24" repeats the one for
   "Livianos 12x18x24", and the two first process videos are swapped (the link under
@@ -54,6 +70,11 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 - **Astro scopes styles per component**: a `grid-column: span 2` in the parent's
   `<style>` does NOT reach the root element of a child component (`<ProductCard />`).
   Use fixed column counts instead of spans, or `:global()`.
+- **El bento del catálogo de la home** es una grilla de 3 × 3 (9 celdas): el
+  `<div class="featured-cta">` ocupa 2 × 2 (4 celdas) y los 5 `<ProductCard />`
+  llenan las otras 5. El `span` va en el `<div>`, que sí es hijo directo de la
+  grilla; los `<ProductCard />` son celdas normales. A ≤980 px el `span` se
+  desactiva, el tile pasa al final y quedan 3 filas parejas.
 
 ## Deployment
 

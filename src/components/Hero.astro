@@ -1,38 +1,74 @@
 ---
 /**
- * Hero.astro — bloque principal según la referencia Stitch:
- * columna de texto (eyebrow, H1, bajada, 2 CTA)
- * + tarjeta de imagen con badge naranja superpuesto.
- * SPEC §22.
+ * Hero.astro — bloque principal de la home.
+ *
+ * Sobre anthracita: la página alterna superficies claras y oscuras para que
+ * tenga profundidad (SPEC §29: "empresa industrial fabricante", no un corralón).
+ *
+ * Columna de texto (eyebrow, H1, bajada, 2 CTA, 3 hechos) + foto real de
+ * planta con la ficha de datos del producto destacado en monoespaciada.
+ *
+ * La ficha muestra SOLO datos confirmados por la empresa (medidas, peso
+ * unitario y unidades por pallet). Si un dato no está, no se imprime.
  */
+import { products } from '../data/products';
+import { formatKg } from '../lib/productImage';
 
 interface Props {
   eyebrow?: string;
-  title?: string;
   subtitle?: string;
   primaryCta?: { href: string; label: string };
   secondaryCta?: { href: string; label: string };
 }
 
 const {
-  eyebrow = 'Solidez estructural y aislación térmica',
-  title = 'Calidad que construye confianza',
-  subtitle = 'Ladrillos cerámicos huecos y portantes producidos en nuestra fábrica de Puerto Rico, Misiones. Stock constante, logística propia y el precio de fábrica.',
-  primaryCta = { href: '/productos', label: 'Explorar Catálogo' },
-  secondaryCta = { href: '/contacto', label: 'Pedir Presupuesto' },
+  eyebrow = 'Fábrica en Puerto Rico, Misiones · Desde 1975',
+  subtitle = 'Fabricamos ladrillos huecos, portantes y piezas de encadenado en nuestra propia planta. Stock constante, precio de fábrica y despacho a obra.',
+  primaryCta = { href: '/productos', label: 'Ver el catálogo' },
+  secondaryCta = { href: '/contacto', label: 'Pedir presupuesto' },
 } = Astro.props;
+
+/** Producto destacado de la ficha: el liviano de 12 cm, el más usado. */
+const destacado = products.find((p) => p.slug === '12x18x24-liviano');
+
+/** Datos de la ficha. Si el dato no está confirmado, no se imprime la fila. */
+const ficha: { label: string; value: string }[] = destacado
+  ? [
+      destacado.dimensions
+        ? { label: 'Medidas', value: destacado.dimensions }
+        : null,
+      destacado.weightKg
+        ? { label: 'Peso unitario', value: formatKg(destacado.weightKg) }
+        : null,
+      destacado.palletUnits
+        ? { label: 'Palet', value: `${destacado.palletUnits} unidades` }
+        : null,
+    ].filter((d): d is { label: string; value: string } => d !== null)
+  : [];
+
+/** Hechos de la planta, en mono: todos verificados. */
+const hechos = [
+  { value: '1975', label: 'Año de inicio' },
+  { value: `${products.length}`, label: 'Modelos en catálogo' },
+  { value: '5', label: 'Días de atención en planta' },
+];
 ---
 
 <section class="hero">
   <div class="container hero-inner">
     <div class="hero-text">
-      <span class="section-eyebrow">{eyebrow}</span>
-      <h1>{title}</h1>
+      <span class="hero-eyebrow">{eyebrow}</span>
+
+      <h1 class="hero-title">
+        Ladrillos cerámicos <span class="hero-title-hl">hechos en Misiones</span> para
+        construir nuestra región
+      </h1>
+
       <p class="hero-sub">{subtitle}</p>
 
       <div class="hero-actions">
-        <a href={primaryCta.href} class="btn btn-primary btn-lg">{primaryCta.label}</a>
-        <a href={secondaryCta.href} class="btn btn-secondary btn-lg">
+        <a href={primaryCta.href} class="btn btn-accent btn-lg">{primaryCta.label}</a>
+        <a href={secondaryCta.href} class="btn btn-ghost-dark btn-lg">
           {secondaryCta.label}
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -40,6 +76,15 @@ const {
           </svg>
         </a>
       </div>
+
+      <ul class="hero-hechos">
+        {hechos.map((h) => (
+          <li>
+            <span class="hero-hecho-value mono">{h.value}</span>
+            <span class="hero-hecho-label">{h.label}</span>
+          </li>
+        ))}
+      </ul>
     </div>
 
     <div class="hero-media">
@@ -53,48 +98,97 @@ const {
         decoding="async"
       />
 
-      <div class="hero-badge">
-        <p class="hero-badge-title">Stock constante</p>
-        <p class="hero-badge-text">
-          Ladrillo hueco 12x18x24 en planta
-        </p>
-        <a href="/productos/12x18x24-liviano" class="hero-badge-link">
-          Ver ese producto
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
-               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-        </a>
-      </div>
+      {destacado && ficha.length > 0 && (
+        <div class="hero-ficha">
+          <p class="hero-ficha-eyebrow">Producto destacado</p>
+          <p class="hero-ficha-title">{destacado.name}</p>
+          <dl class="hero-ficha-data">
+            {ficha.map((d) => (
+              <div class="data-row">
+                <dt>{d.label}</dt>
+                <dd>{d.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <a href={`/productos/${destacado.slug}`} class="hero-ficha-link">
+            Ver la ficha completa
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </div>
+      )}
     </div>
   </div>
 </section>
 
 <style>
   .hero {
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
-    padding-block: var(--space-8);
+    position: relative;
+    overflow: hidden;
+    background: var(--brand-ink);
+    color: var(--on-dark);
+    padding-block: var(--space-9);
+    isolation: isolate;
   }
+
+  /* Textura de hiladas: juntas horizontales y verticales alternadas, al 7% de
+     opacidad. Es la "textura cerámica" del SPEC, sin llenar el fondo de
+     ladrillos. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='232' height='96' viewBox='0 0 232 96'%3E%3Cg fill='none' stroke='%23f5f1ec' stroke-opacity='.07' stroke-width='1'%3E%3Cpath d='M0 .5h232M0 48.5h232M0 95.5h232'/%3E%3Cpath d='M58 .5v48M174 .5v48M0 48.5v47M116 48.5v47M232 48.5v47'/%3E%3C/g%3E%3C/svg%3E");
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 35%, #000 75%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 35%, #000 75%, transparent 100%);
+  }
+
   .hero-inner {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-columns: 1.04fr 0.96fr;
     gap: var(--space-8);
     align-items: center;
   }
 
-  h1 {
-    font-size: clamp(1.875rem, 3.4vw, 2.75rem);
-    text-transform: uppercase;
-    letter-spacing: -0.015em;
-    line-height: 1.12;
+  /* — Texto — */
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: var(--space-4);
+    font-size: var(--fs-50);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
   }
+  .hero-eyebrow::before {
+    content: '';
+    width: 22px;
+    height: 2px;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .hero-title {
+    font-size: clamp(2.125rem, 4.4vw, 3.5rem);
+    line-height: 1.06;
+    letter-spacing: -0.032em;
+    color: #fff;
+    margin-bottom: var(--space-4);
+    max-width: 15ch;
+  }
+  .hero-title-hl { color: var(--accent); }
+
   .hero-sub {
-    color: var(--text-muted);
+    color: var(--on-dark-muted);
     font-size: var(--fs-300);
     line-height: 1.6;
-    max-width: 54ch;
+    max-width: 52ch;
     margin-bottom: var(--space-6);
   }
 
@@ -102,7 +196,42 @@ const {
     display: flex;
     gap: var(--space-3);
     flex-wrap: wrap;
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-7);
+  }
+
+  /* Botón secundario sobre anthracita: transparente con borde claro. */
+  .btn-ghost-dark {
+    background: transparent;
+    color: #fff;
+    border-color: rgba(245, 241, 236, 0.32);
+  }
+  .btn-ghost-dark:hover {
+    background: rgba(245, 241, 236, 0.1);
+    color: #fff;
+    border-color: rgba(245, 241, 236, 0.6);
+  }
+
+  /* — Hechos de la planta — */
+  .hero-hechos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    list-style: none;
+    margin: 0;
+    padding: var(--space-4) 0 0;
+    border-top: 1px solid rgba(245, 241, 236, 0.14);
+  }
+  .hero-hechos li { display: flex; flex-direction: column; gap: 0.1rem; }
+  .hero-hecho-value {
+    font-size: var(--fs-400);
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .hero-hecho-label {
+    font-size: var(--fs-50);
+    color: var(--on-dark-muted);
+    letter-spacing: 0.02em;
   }
 
   /* — Media — */
@@ -118,60 +247,79 @@ const {
     object-fit: cover;
     object-position: center 55%;
     border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-deep);
   }
 
-  .hero-badge {
+  /* Ficha de datos: el recurso que se repite en todo el sitio. */
+  .hero-ficha {
     position: absolute;
     left: calc(var(--space-5) * -1);
     bottom: 0;
-    max-width: 300px;
-    background: var(--accent);
-    color: #fff;
+    width: min(300px, 78%);
+    background: var(--brand-ink-soft);
+    border: 1px solid rgba(245, 241, 236, 0.16);
     border-radius: var(--radius-lg);
-    padding: var(--space-4);
-    box-shadow: 0 10px 26px rgba(176, 58, 22, 0.32);
+    padding: var(--space-4) var(--space-5);
+    box-shadow: var(--shadow-deep);
   }
-  .hero-badge-title {
-    margin: 0 0 0.2rem;
+  .hero-ficha-eyebrow {
+    margin: 0 0 0.15rem;
+    font-size: var(--fs-50);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+  }
+  .hero-ficha-title {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-display);
     font-size: var(--fs-300);
     font-weight: 700;
     color: #fff;
     letter-spacing: -0.01em;
   }
-  .hero-badge-text {
-    margin: 0 0 var(--space-3);
-    font-size: var(--fs-50);
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.92);
+  .hero-ficha-data {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0 0 var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid rgba(245, 241, 236, 0.12);
   }
-  .hero-badge-link {
+  .hero-ficha-data .data-row { flex-direction: row; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+  .hero-ficha-data dt { color: var(--on-dark-muted); }
+  .hero-ficha-data dd { color: #fff; font-size: var(--fs-100); white-space: nowrap; }
+
+  .hero-ficha-link {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     color: #fff;
     font-size: var(--fs-100);
     font-weight: 600;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+    border-bottom: 1px solid rgba(245, 241, 236, 0.4);
     padding-bottom: 1px;
   }
-  .hero-badge-link:hover { color: #fff; border-bottom-color: #fff; }
+  .hero-ficha-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
-  @media (max-width: 900px) {
-    .hero-inner { grid-template-columns: 1fr; gap: var(--space-6); }
+  @media (max-width: 980px) {
+    .hero { padding-block: var(--space-8); }
+    .hero-inner { grid-template-columns: 1fr; gap: var(--space-7); }
+    .hero-title { max-width: 20ch; }
     .hero-media { padding-bottom: 0; }
-    .hero-badge {
+    .hero-ficha {
       position: static;
-      max-width: none;
+      width: auto;
       margin-top: calc(var(--space-4) * -1);
       margin-left: var(--space-4);
     }
   }
 
-  /* La foto de portada es vertical, asi que en pantalla angosta conviene
-     dejar el encuadre mas alto y no recortar tanto. */
+  /* La foto de portada es vertical: en pantalla angosta conviene dejar el
+     encuadre más alto y no recortar tanto. */
   @media (max-width: 640px) {
     .hero-media { aspect-ratio: 3 / 4; }
     .hero-photo { object-position: center 50%; }
+    .hero-ficha { margin-left: var(--space-3); }
+    .hero-hechos { gap: var(--space-5); }
   }
 </style>

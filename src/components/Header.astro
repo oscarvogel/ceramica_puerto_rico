@@ -3,14 +3,20 @@
  * Header.astro
  * Barra superior oscura (datos de planta + horario) + navegación principal
  * con CTA "Pedir Presupuesto". En móvil: menú colapsable.
+ *
+ * El menú cubre las 6 secciones que el sitio publica: Productos,
+ * Aplicaciones, Distribuidores, Recursos técnicos, Historia y Proceso y
+ * Contacto (este último, en el CTA de la derecha).
  */
 import Logo from './Logo.astro';
 import { company } from '../data/company';
 
 const navItems = [
   { href: '/productos', label: 'Productos' },
+  { href: '/aplicaciones', label: 'Aplicaciones' },
+  { href: '/distribuidores', label: 'Distribuidores' },
+  { href: '/recursos-tecnicos', label: 'Recursos técnicos' },
   { href: '/historia-y-proceso', label: 'Historia y Proceso' },
-  { href: '/contacto', label: 'Contacto' },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -243,6 +249,4 @@ const isActive = (href: string) => {
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
   });
-
-  document.querySelector('[data-site-header]')?.classList.add('is-scrolled');
 </script>
