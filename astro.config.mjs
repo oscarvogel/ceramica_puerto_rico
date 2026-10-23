@@ -1,6 +1,5 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import vue from '@astrojs/vue';
 import sitemap from '@astrojs/sitemap';
 /** @typedef {import('@astrojs/sitemap').SitemapItem} SitemapItem */
 
@@ -11,7 +10,6 @@ export default defineConfig({
   base: './',
   trailingSlash: 'never',
   integrations: [
-    vue(),
     sitemap({
       changefreq: 'monthly',
       priority: 0.5,
@@ -24,7 +22,7 @@ export default defineConfig({
         let priority = 0.5;
         let changefreq = 'monthly';
         if (path === '') { priority = 1.0; changefreq = 'weekly'; }
-        else if (path === '/empresa' || path === '/productos') { priority = 0.9; changefreq = 'weekly'; }
+        else if (path === '/historia-y-proceso' || path === '/productos') { priority = 0.9; changefreq = 'weekly'; }
         else if (['/aplicaciones', '/distribuidores', '/recursos-tecnicos'].includes(path)) { priority = 0.8; }
         else if (path.startsWith('/productos/')) { priority = 0.7; }
         return /** @type {SitemapItem} */ ({ ...item, priority, changefreq });
