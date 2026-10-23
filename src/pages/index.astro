@@ -258,11 +258,14 @@ const waQuote = encodeURIComponent(
         </div>
 
         <div class="field">
-          <label for="cta-msg">Material y cantidad estimada</label>
+          <label for="cta-msg">Material y cantidad estimada <span aria-hidden="true">*</span></label>
           <textarea
             id="cta-msg"
             name="message"
             rows="3"
+            required
+            minlength="10"
+            maxlength="2000"
             placeholder="Ej: 1.500 ladrillos de 12 + 600 portantes con flete a obra…"
           ></textarea>
         </div>
@@ -276,6 +279,8 @@ const waQuote = encodeURIComponent(
           </svg>
           Enviar Solicitud a Ventas
         </button>
+
+        <p class="cta-form-status" data-form-status aria-live="polite"></p>
 
         <a
           href={`https://wa.me/${company.branches[0].whatsapp}?text=${waQuote}`}
@@ -577,6 +582,36 @@ const waQuote = encodeURIComponent(
   }
   .cta-form-note a { font-weight: 600; }
   .hp { position: absolute; left: -9999px; }
+  .cta-form-status {
+    display: none;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--fs-100);
+    margin: var(--space-3) 0 0;
+    line-height: 1.5;
+  }
+  .cta-form-status:not([data-kind=""]) { display: flex; }
+  .cta-form-status[data-kind="success"] {
+    background: #ecfdf5;
+    color: #1b7a3d;
+    border: 1px solid #a7f3d0;
+  }
+  .cta-form-status[data-kind="error"] {
+    background: #fef2f2;
+    color: var(--color-error);
+    border: 1px solid #fecaca;
+  }
+  .cta-form-status[data-kind="pending"] {
+    background: var(--color-grafito-50);
+    color: var(--color-grafito-700);
+    border: 1px solid var(--color-grafito-100);
+  }
+  .cta-form-status svg { flex-shrink: 0; }
+  .cta-form .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+  @keyframes cta-spin { to { transform: rotate(360deg); } }
+  .cta-form .spinner { animation: cta-spin 0.8s linear infinite; }
 
   @media (max-width: 900px) {
     .cta-grid { grid-template-columns: 1fr; gap: var(--space-6); }
@@ -593,3 +628,49 @@ const waQuote = encodeURIComponent(
     .benefit-card:last-child { grid-column: span 1; }
   }
 </style>
+
+<script>
+  // El form de la home es un POST nativo: sin JS el navegador se va a una
+  // pagina con un JSON crudo del servidor. Con JS se manda por fetch y el
+  // resultado se muestra en el mismo formulario (igual que en /contacto).
+  const form = document.querySelector<HTMLFormElement>('.cta-form');
+  const status = document.querySelector<HTMLElement>('[data-form-status]');
+  const submitBtn = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+  const ICONS = {
+    pending: '<svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.2-8.55"/></svg>',
+    success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+    error: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>',
+  };
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!status || !submitBtn) return;
+
+    status.dataset.kind = 'pending';
+    status.innerHTML = `${ICONS.pending}<span>Enviando tu consulta...</span>`;
+    submitBtn.disabled = true;
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' },
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.ok) {
+        status.dataset.kind = 'success';
+        status.innerHTML = `${ICONS.success}<span><strong>¡Gracias!</strong> Recibimos tu consulta y te respondemos a la brevedad.</span>`;
+        form.reset();
+        status.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        throw new Error(json.message || 'Error del servidor');
+      }
+    } catch {
+      status.dataset.kind = 'error';
+      status.innerHTML = `${ICONS.error}<span>No pudimos enviar tu consulta. Probá de nuevo o escribinos por WhatsApp.</span>`;
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>
