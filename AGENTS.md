@@ -63,6 +63,14 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 - **The Centro Técnico has no downloadable files yet**: it lists the documents the
   factory has and the button says "Solicitar" (to `/contacto`). When the client
   sends the PDFs, turn that button into a real download.
+- **Ninguna nota que le pida datos al visitante en una página publicada.** La
+  cronología ya la completó la empresa, así que la nota *"Nos falta un dato de
+  esta cronología: los nombres de los fundadores. Si la empresa los tiene,
+  envianoslos por WhatsApp y los incorporamos"* sobraba en una página viva
+  (PR #19, 24/10/2026). Si falta un dato, **no se escribe la nota**: se espera
+  el dato y mientras tanto el valor queda `null` en el archivo de datos o el
+  bloque no se renderiza. Es la misma regla que las marcas de "pendiente",
+  pero para el texto editorial.
 
 ### Layout rules
 
@@ -185,6 +193,22 @@ Cada ronda: 72 archivos del sitio y 348 de `vendor/`, subidos de a uno, con
 las dos rondas se publicaron por un túnel SOCKS5. El deploy tiene que ir por
 ese túnel mientras el ban siga vigente: **no tires de `deploy.cmd` a secas
 mientras la IP esté baneada**, porque se queda esperando en cada conexión.
+
+### Deploy del PR #19 (24/10/2026) — directo, sin túnel
+
+| PR | Qué salió | Respaldo del `.htaccess` |
+|---|---|---|
+| #19 | Saca de `/historia-y-proceso` la nota que pedía los nombres de los fundadores (PR de Luka) | `/revision-20261024-1457/.htaccess` |
+
+72 archivos del sitio y 348 de `vendor/`, subidos de a uno, con **0 tamaños
+distintos** y las cuatro rutas en 200. `deploy.cmd` salió con código **0**.
+
+**El ban de la IP ya está levantado.** El 24/10/2026, a las 14:57, los puertos
+21 y 443 respondieron desde esta máquina, el FTPS autenticó y el deploy salió
+**directo, sin túnel SOCKS5**. La instrucción del túnel sigue en pie por si
+vuelve a pasar, pero **probá directo primero**: con `Test-NetConnection
+a1000380.ferozo.com -Port 21` y una conexión FTPS real, antes de asumir que
+hay ban y perder tiempo levantando un túnel que no hace falta.
 
 ### Cuidado: no listar el docroot entero por FTP (23/10/2026, 15:50)
 

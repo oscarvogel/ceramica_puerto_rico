@@ -777,6 +777,8 @@ Cada ronda: **72 archivos del sitio + 348 de `vendor/`**, subidos de a uno, con 
 
 ### El bloqueo de IP (y cómo se destrabó)
 
+> **Actualización 24/10/2026, 14:57:** el ban **ya está levantado**. Los puertos 21 y 443 responden desde la máquina que publica y el FTPS autentica, así que el deploy del PR #19 salió **directo, sin túnel**. La vía del túnel queda como recurso si el ban vuelve.
+
 El hosting tenía **baneada la IP de la máquina que publica** (`186.5.245.12`): los puertos 21, 22, 80, 443, 2083, 2087, 8443 y 3306 no respondían y el ping tampoco, pero **desde el exterior el sitio respondía perfecto** — con un lector remoto se recuperó la versión vieja sin problema. O sea: el origen estaba sano, lo que no llegaba era esta máquina. Es la huella del incidente del 23/10, cuando el deploy listaba el docroot entero por FTP.
 
 **Solución: salir por un túnel SOCKS5.** No hizo falta comprar una VPN:
@@ -825,7 +827,7 @@ No rompen nada — el `index.html` remoto referencia **exactamente 3 CSS y 2 fue
 - **Plano oficial del ladrillo**: la geometría del corte se dedujo de la foto real y del texto del catálogo ("seis celdas"). Si el plano difiere, hay que redibujar `BrickCut.astro`.
 - **`unitsPerM2`**: sigue `null` en los 9 productos, así que la calculadora del SPEC §28 continúa sin construir.
 - **Destino de la medición** (GA4, Plausible o log propio).
-- **Levantar el ban de la IP**: mientras siga vigente, los deploys tienen que ir por el túnel.
+- **Levantar el ban de la IP**: ~~mientras siga vigente, los deploys tienen que ir por el túnel~~ → **resuelto el 24/10/2026**: el ban se levantó solo y el deploy del PR #19 salió directo.
 - **3.3** WebM de los videos · **3.6** eventos de conversión · **3.7** `llms.txt` · **4.1** Lighthouse · **4.4** Rich Results.
 
 
