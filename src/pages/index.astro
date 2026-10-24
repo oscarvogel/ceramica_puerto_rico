@@ -526,7 +526,9 @@ const waQuote = encodeURIComponent(
   }
   .stat-note {
     font-size: var(--fs-50);
-    color: rgba(35, 21, 14, 0.72);
+    /* El rgba(35,21,14,.72) sobre el naranja de marca daba 3.45:1 al mezclarse
+       con el fondo (#61200a). Este color opaco da 4.72:1 sobre #ff3e00. */
+    color: #331605;
     line-height: 1.45;
   }
   @media (max-width: 900px) {
@@ -785,7 +787,7 @@ const waQuote = encodeURIComponent(
     gap: 0.4rem;
     margin-top: var(--space-3);
     padding: 0.45rem 0.95rem;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--accent-on-dark);
     border-radius: 999px;
     font-weight: 700;
     font-size: var(--fs-100);
@@ -993,7 +995,7 @@ const waQuote = encodeURIComponent(
     font-size: var(--fs-100);
     color: var(--on-dark);
   }
-  .cta-points svg { color: var(--accent); flex-shrink: 0; }
+  .cta-points svg { color: var(--accent-on-dark); flex-shrink: 0; }
 
   /* — Formulario — */
   .cta-form {

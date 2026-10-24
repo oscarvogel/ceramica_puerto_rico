@@ -50,7 +50,10 @@ const organizationLd = {
   name: SITE_NAME,
   legalName: company.legalName,
   url: SITE_URL,
-  logo: new URL('/logo.svg', SITE_URL).toString(),
+  // Google no acepta SVG para el logo de Organization: pide un raster de al
+  // menos 112x112. /logo.png es el mismo public/logo.svg rasterizado
+  // (npm run iconos).
+  logo: new URL('/logo.png', SITE_URL).toString(),
   description: SITE_DESCRIPTION,
   sameAs: [company.social.instagram, company.social.facebook],
   contactPoint: {
@@ -79,14 +82,22 @@ const localBusinessLd = {
     addressRegion: company.address.province,
     addressCountry: company.address.country,
   },
-  openingHoursSpecification: {
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    opens: '07:00',
-    closes: '18:00',
-    opensMidday: '12:00',
-    closesMidday: '14:00',
-  },
+  // schema.org define openingHoursSpecification como ARRAY, no como objeto.
+  // La jornada es partida (7 a 12 y 14 a 18), asi que van dos tramos.
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '07:00',
+      closes: '12:00',
+    },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '14:00',
+      closes: '18:00',
+    },
+  ],
   areaServed: ['Misiones', 'Corrientes', 'Chaco', 'Formosa'].map((name) => ({
     '@type': 'AdministrativeArea',
     name,

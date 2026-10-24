@@ -1,0 +1,58 @@
+{
+  "public/images/hero/portada-deposito.webp": {
+    "original": "d2708325ed219e4e95686e6bc0151cd2c4735cfef3d9e7913fd7ec0739d005e8",
+    "salida": "688ec8cac77f914f61f5644d92098b3d9047c229878312407a6159b131d6ed46"
+  },
+  "public/images/logistica/remolque-carga.webp": {
+    "original": "45920bf946df481686ade2d3deadf5176b3d4865d1b4aae058678c5e5334b44e",
+    "salida": "4ef4e1e05692c947cb3821b1afdaeec650d2601b135ff2c9c6ba503f5814d598"
+  },
+  "public/images/obras/estructura-ladrillo.webp": {
+    "original": "bc2419f02017ab4684748eed8d7c29d8980bcbfdf55ef797c0c7e71eacd62b80",
+    "salida": "f7d0feccb3ee30daf18c18022ffeed365cdf511cfcf1b213f40ec80a9c32aa67"
+  },
+  "public/images/planta/horno-pallets-1.webp": {
+    "original": "7fc9e9731060b4a91282f34ed66180a9b7541bf6b2adad5b054cfd11f31e21ed",
+    "salida": "236abe11b897c00aa35a283ff2b83455f7cc3d245ab0f6746bb0165c16e3466b"
+  },
+  "public/images/planta/horno-pallets-2.webp": {
+    "original": "9554b34ec8266b8f5ea82d3515de9b6647216d9031cf30c2d121cf5c2e6097fe",
+    "salida": "594de6b7b705893bc29b12c35a38cde446d00eb641471a10119a2f21b5294229"
+  },
+  "public/images/planta/pallets-despacho.webp": {
+    "original": "1cdc1768ff1f2baae8c59f5462e618ecefa2d30fe1c3c33e69a965859e24fdfe",
+    "salida": "244cb4910905cb43e488b12490f8431f5509e9c6c482f744eaef43f5de7520e2"
+  },
+  "public/images/planta/pallets-exterior-1.webp": {
+    "original": "e323d8d85f324451133aa6d453c111b95e7e72705ac0192e8dc1ef74e56bc681",
+    "salida": "7939fe3782aa5b29f925594851243ef51f301bf4be5335409ede2466d035b7ee"
+  },
+  "public/images/planta/pallets-exterior-2.webp": {
+    "original": "3f9068f0b6206d598df241b59e63c39464e5bbef553417144f5f60bc8bcdba5e",
+    "salida": "b665f73c7331b1e11a54a42780141b64a457d2d449739a1c01556e1c2b38715e"
+  },
+  "public/images/planta/secado-despacho.webp": {
+    "original": "076d32f64b73892874aa3ee2d561a1853a8a29a226ec9aba2dbce4a3b22f28d3",
+    "salida": "edf97d147988c67cc29115db32c303b68f99d6b44eb438d8fa5bc2c920c4a3a3"
+  },
+  "public/images/planta/secado-estanterias.webp": {
+    "original": "c03a745219523402ccd2f1402571ddaf8f8049616a18db4d0479a24d1350dbf4",
+    "salida": "8e0d7f9428f57068b2ae0fb8bf968e12b2b3798329ff40dc0fe390823d804888"
+  },
+  "public/images/planta/taller-operarios.webp": {
+    "original": "26d3f59ed9bfa5a331d2d9b2c897639b7b0db52579fca0be533da4dfc3414ea8",
+    "salida": "91b77991d89d06ca7a8f0bc14c008739cb30b1920e1cc791b15d6bbcc6d7aee1"
+  },
+  "public/images/productos/18x18x24-liviano.webp": {
+    "original": "3dd06f61a5f65217882f2265947296bc9186461e6f63ada3dbc056b323bff3d6",
+    "salida": "400864420da81c039e5435fd1ec0169c8276219f7e5f7fba306aca9beea2e2d4"
+  },
+  "public/images/productos/18x18x24-peine.webp": {
+    "original": "5c06fbd50306ac1c4a6f3467ade45c047e4a6b0457a1355d9503752704e0ad27",
+    "salida": "17daf21d9000819acd541a212d8d9541324c7c8e22960917b477d5665f37ada9"
+  },
+  "public/images/productos/18x18x24-portante.webp": {
+    "original": "c68403be19c32488fb88fb10c881ed0670d13247f829ca31ea68ec3ac6217016",
+    "salida": "53b90c7033766a31e736e0a99dd106450ad38c28312add47cdfef6b85fa7554a"
+  }
+}

@@ -77,7 +77,7 @@ const productJsonLd = {
 
 <BaseLayout
   title={`${product.name} | ${company.name}`}
-  description={product.description}
+  description={product.metaDescription ?? product.description}
   path={`/productos/${product.slug}`}
   type="article"
   breadcrumbs={breadcrumbs}

@@ -11,6 +11,7 @@
     "start": "astro dev",
     "build": "astro build",
     "iconos": "node scripts/generar-iconos.mjs",
+    "imagenes": "node scripts/optimizar-imagenes.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check"

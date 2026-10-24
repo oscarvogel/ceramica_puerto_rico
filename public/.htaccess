@@ -50,12 +50,54 @@ ErrorDocument 404 /404.html
 # .webmanifest: sin esta regla el archivo baja SIN Content-Type y Chrome
 # descarta el manifest (solo acepta application/manifest+json,
 # application/json o text/json).
+#
+# Las variantes del hero van en WebP, que el hosting ya sirve como
+# image/webp. No se usan AVIF a proposito: este hosting no conoce .avif, y
+# si lo sirviera sin Content-Type de imagen, el navegador tomaria el <source>
+# y NO volveria al WebP: la foto del hero quedaria rota.
 <IfModule mod_mime.c>
   AddType application/manifest+json .webmanifest
 </IfModule>
 
+# Cache de los assets con hash y del HTML.
+#
+# El hosting manda max-age=604800 (7 dias) para css, js, fuentes e imagenes,
+# y nada para el HTML. Los archivos de /_astro/ llevan el hash de su contenido
+# en el nombre (BaseLayout.WZt9QPsI.css): si el archivo cambia, cambia el
+# nombre, asi que se pueden cachear para siempre sin riesgo. Las fuentes de
+# /fonts/ NO llevan hash, por eso quedan fuera.
+#
+# El HTML lleva max-age=0: siempre se revalida con el ETag que ya manda el
+# hosting. Sin Cache-Control, el navegador aplica cache heuristica y puede
+# mostrar una pagina vieja.
+<IfModule mod_setenvif.c>
+  SetEnvIf Request_URI "^/_astro/" ASSET_CON_HASH
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable" env=ASSET_CON_HASH
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
+
+  # URL canonica: https, sin www.
+  #
+  # Sin estas dos reglas las cuatro variantes (http, https, con www y sin www)
+  # responden 200 con el mismo contenido. Para Google eso es contenido
+  # duplicado, y el http:// queda sirviendo el sitio sin HTTPS.
+  #
+  # La canonica es https://ceramicaptorico.com.ar (la misma que declara el
+  # canonical de cada pagina, el sitemap y SITE_URL en Seo.astro).
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^(.*)$ https://ceramicaptorico.com.ar/$1 [R=301,L]
+
+  RewriteCond %{HTTP_HOST} !^ceramicaptorico\.com\.ar$ [NC]
+  RewriteRule ^(.*)$ https://ceramicaptorico.com.ar/$1 [R=301,L]
 
   # La solapa /empresa ahora es /historia-y-proceso.
   RewriteRule ^empresa/?$ /historia-y-proceso [R=301,L]

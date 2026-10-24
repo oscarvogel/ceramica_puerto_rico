@@ -144,6 +144,18 @@ fs.writeFileSync(path.join(PUB, 'favicon.ico'), buildIco([
   { size: 48, buf: p48 },
 ]));
 
+// ---------- logo.png: el logo COMPLETO en raster ----------
+// Google no acepta SVG para el logo de Organization en el JSON-LD: pide un
+// raster de al menos 112x112. Se rasteriza el mismo public/logo.svg (el
+// lockup con el monograma, la linea de techo y el barrido inferior), en
+// blanco, que es como lo renderiza el rastreador.
+const logoPng = await sharp(Buffer.from(logoSvg), { density: 384 })
+  .resize({ width: 1000 })
+  .flatten({ background: '#ffffff' })
+  .png({ compressionLevel: 9, palette: true, quality: 90 })
+  .toBuffer();
+fs.writeFileSync(path.join(PUB, 'logo.png'), logoPng);
+
 // ---------- site.webmanifest ----------
 // El hash del contenido del favicon va en la URL de los iconos: los
 // navegadores cachean los favicon y no los revalidan.
@@ -173,5 +185,6 @@ console.log('  favicon.svg                    ' + faviconSvg.length + ' bytes');
 console.log('  favicon.ico (16/32/48)         ' + fs.statSync(path.join(PUB, 'favicon.ico')).size + ' bytes');
 console.log('  apple-touch-icon.png (180)     ' + p180.length + ' bytes');
 console.log('  android-chrome-192/512.png     ' + p192.length + ' / ' + p512.length + ' bytes');
+console.log('  logo.png (raster del logo)     ' + logoPng.length + ' bytes');
 console.log('  site.webmanifest               ' + fs.statSync(path.join(PUB, 'site.webmanifest')).size + ' bytes');
 console.log('  version de las URLs: v=' + v);
