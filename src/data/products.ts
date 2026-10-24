@@ -32,6 +32,13 @@ export interface Product {
   type: ProductType;
   application: Application[];
   description: string;
+  /**
+   * Texto para la meta description. Si no está, se usa `description`.
+   * Google recorta la meta description cerca de los 160 caracteres: si la
+   * descripción visible se pasa de ese largo, conviene una versión corta
+   * para que Google no corte a mitad de una frase.
+   */
+  metaDescription?: string;
   /** ancho × alto × largo en cm */
   dimensions?: string | null;
   /** ancho nominal en cm, para filtros y ordenamiento */
@@ -141,6 +148,8 @@ export const products: Product[] = [
     application: ['muros-portantes', 'edificios', 'cerramientos'],
     description:
       'Ladrillo portante de 18 cm para muros que soportan cargas. Es la pieza de mayor resistencia de la línea; el uso estructural requiere verificación del profesional a cargo.',
+    metaDescription:
+      'Ladrillo portante de 18 cm para muros que soportan cargas. La pieza de mayor resistencia de la línea, para uso estructural verificado.',
     dimensions: '18 × 18 × 24 cm',
     widthCm: 18,
     weightKg: 5.0,

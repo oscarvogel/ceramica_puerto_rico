@@ -319,10 +319,10 @@ web tiene un día de vida.
 | # | Qué | Dónde / arreglo |
 |---|---|---|
 | 1 | **4 variantes de URL responden 200** sin redirigir (`http://`, `https://`, `www.` y sin `www.`) | `.htaccess`: falta el 301 a la canónica `https://ceramicaptorico.com.ar` |
-| 2 | **LCP 3,1 s** (objetivo < 2,5 s) | el hero `portada-deposito.webp` pesa 227 KB; Lighthouse estima 191 KB de ahorro |
-| 3 | **Contraste insuficiente** en 4 pares de color | `--accent` #d6400a sobre #f7f5f1 (4,19:1), `#61200a` sobre #ff3e00 (3,45:1), `--text-muted` #8a807a sobre blanco (3,85:1) y sobre #f2efea (3,36:1). **El naranja de marca es intocable**: se oscurece el texto |
+| 2 | **LCP 3,1 s** (objetivo < 2,5 s) | el hero `portada-deposito.webp` pesa 227 KB y se servía **entero en cualquier pantalla**; Lighthouse estima 191 KB de ahorro |
+| 3 | **Contraste insuficiente** en **6** pares de color (no 4) | `--accent` #d6400a sobre #f7f5f1 (4,19:1) y sobre #f2efea (3,98:1); `--text-soft` #8a807a sobre blanco (3,85:1) y sobre #f2efea (3,36:1); `.stat-note` rgba(35,21,14,.72) mezclado con el naranja daba #61200a (3,45:1); y **blanco sobre el verde de WhatsApp #25d366 (1,98:1)** |
 | 4 | **El CTA "Pedir Presupuesto" no tiene nombre accesible a ≤480 px** | `Header.astro`: el `<span>` se oculta con `display:none` y el SVG es `aria-hidden` → falta un `aria-label` fijo |
-| 5 | **CSS/JS de `/_astro/` sin `Cache-Control`** (solo ETag) | `.htaccess`: falta `Cache-Control: public, max-age=31536000, immutable` |
+| 5 | **Caché corta en los assets y nula en el HTML** | el hosting manda `Cache-Control: max-age=604800` (7 días) en css, js, fuentes e imágenes, y **nada** en el HTML |
 | 6 | `base: './'` genera URLs `/./_astro/...` | `astro.config.mjs`: lo correcto para un sitio en la raíz del docroot es `base: '/'` |
 | 7 | `openingHoursSpecification` se emite como **objeto**; schema.org lo define como **array** | `Seo.astro` |
 | 8 | 2 descripciones pasan de 160 caracteres | `/historia-y-proceso` y `/productos/18x18x24-portante` (170 cada una) |
@@ -330,6 +330,48 @@ web tiene un día de vida.
 > **No cambies títulos, URLs ni contenido sin leer `PLAN-SEO.md`.** El sitio no
 > está indexado todavía: cambiar la estructura ahora tira el trabajo de
 > indexación que falta.
+
+### La Fase 0 del plan SEO — implementada (24/10/2026)
+
+Todo lo de abajo se hizo en un PR y se verificó **contra el build compilado**
+con Lighthouse antes de publicar.
+
+| Arreglo | Cómo quedó | Medido |
+|---|---|---|
+| 301 de las 4 variantes | dos `RewriteRule` en el `.htaccess`: una por `https` y otra por el host | las 4 variantes deben responder **301** a `https://ceramicaptorico.com.ar` |
+| 6 contrastes | `--accent` #d6400a → **#b83708**, `--accent-hover` → **#993005**, nuevo **`--accent-on-dark` #e85f26** para los fondos anthracita, `--text-soft` #8a807a → **#6f665d**, `--text-muted` → **#5f574f**, `.stat-note` → **#331605**, botón de WhatsApp → **#13833f** | Lighthouse `color-contrast`: **0 fallos** (antes 6 pares) |
+| `link-name` del CTA | `aria-label="Pedir Presupuesto"` en el `<a>` de `Header.astro` | Lighthouse `link-name`: **ok** |
+| LCP del hero | `<picture>` con variantes **WebP de 480/720/960 px** (`npm run imagenes`) | LCP **3,1 s → 2,4 s**; el móvil baja la de 720 px (78 KB) en vez de los 227 KB |
+| Caché | `immutable` de 1 año para `/_astro/`, `max-age=0, must-revalidate` para el HTML | en `.htaccess`, con `SetEnvIf` para limitarlo a `/_astro/` |
+| `base: '/'` | `astro.config.mjs` | el HTML pasa de `/./_astro/...` a `/_astro/...` |
+| Schema | `openingHoursSpecification` como **array** de 2 tramos (7-12 y 14-18) y `logo` apunta a `/logo.png` (raster del logo) | Google pide raster para el logo del Knowledge Panel |
+| Descripciones largas | `metaDescription` opcional en `products.ts` + `/historia-y-proceso` recortada | las 23 páginas quedan en ≤160 caracteres |
+
+> **El token `--accent` se partió en dos.** El mismo naranja se usaba sobre
+> fondo claro y sobre anthracita, y no hay un color que pase 4,5:1 en los dos
+> casos: oscurecerlo arreglaba la home pero **empeoraba** el hero, el footer y
+> la barra superior. Ahora `--accent` es el tono de fondo claro y
+> `--accent-on-dark` el de fondo oscuro. **Si tocás un color, fijate en qué
+> fondo se usa.**
+
+> **El hosting NO conoce la extensión `.avif`.** El hero iba a servirse en
+> AVIF (10 KB menos en el celular), pero se verificó que si el archivo baja
+> sin `Content-Type` de imagen, **el navegador toma el `<source>` y NO vuelve
+> al `<source>` siguiente**: la foto del hero queda rota. Por eso las
+> variantes van **solo en WebP**, que el hosting ya sirve como `image/webp`.
+> Es el mismo problema que el `.webmanifest`.
+
+> **La imagen hero ahora va en `<picture>`, y eso obliga a un CSS extra.**
+> El reset global pone `height: auto` en `picture`: sin
+> `.hero-media picture { height: 100% }`, el `<img>` leería el alto de su
+> contenedor y el hero se estiraría a 1280 px de alto. Si se toca el reset
+> global, revisar esto.
+
+> **Las imágenes se recomprimen con `npm run imagenes`**
+> (`scripts/optimizar-imagenes.mjs`). Es **idempotente**: guarda el hash de
+> cada original y de cada salida en `scripts/imagenes-manifest.json`, así que
+> no vuelve a codificar una imagen ya procesada (recodificar un WebP varias
+> veces degrada la foto). Si se cambia una foto, se corre de nuevo.
 
 ### Lo que NO aparece en las 23 páginas (y es lo que el comprador busca)
 

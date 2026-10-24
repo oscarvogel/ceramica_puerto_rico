@@ -166,13 +166,24 @@ Para una fábrica, esto es lo que más pesa después de la indexación.
 | # | Hallazgo | Medido | Arreglo |
 |---|---|---|---|
 | 1 | **4 variantes de URL responden 200** sin redirigir: `http://`, `https://`, `www.` y sin `www.` | 4 × 200 | 301 de las 3 variantes a la canónica. Hoy es contenido duplicado para Google y además `http://` sin HTTPS. |
-| 2 | **LCP 3,1 s** (debería ser < 2,5 s) | Lighthouse | La imagen hero `portada-deposito.webp` pesa 227 KB. Lighthouse estima **191 KB de ahorro** optimizando la entrega de imagen. |
-| 3 | **Contraste insuficiente** en 4 pares de color | `--accent` #d6400a sobre #f7f5f1 da 4,19:1 (necesita 4,5); `#61200a` sobre #ff3e00 da 3,45:1; `#8a807a` sobre blanco da 3,85:1 | Oscurecer esos tokens. Ojo: **el naranja de marca es intocable**, se ajusta el texto. |
+| 2 | **LCP 3,1 s** (debería ser < 2,5 s) | Lighthouse | La imagen hero `portada-deposito.webp` pesa 227 KB y se servía **entera en cualquier pantalla**. Lighthouse estima **191 KB de ahorro**. |
+| 3 | **Contraste insuficiente** en 6 pares de color | Lighthouse `color-contrast` | Ver la tabla de abajo: son 6 pares, no 4 (el peor es el botón de WhatsApp). |
 | 4 | **El botón "Pedir Presupuesto" no tiene nombre accesible en móvil** | Lighthouse `link-name` | A ≤480 px el `<span>` se oculta con `display: none` y el SVG es `aria-hidden`: el enlace queda sin nombre. Agregar `aria-label` fijo. |
-| 5 | **CSS y JS sin `Cache-Control`** (solo ETag) | Lighthouse: 37 KB de ahorro | `Cache-Control: public, max-age=31536000, immutable` para `/_astro/`. |
+| 5 | **Caché corta en los assets y nula en el HTML** | Cabeceras del hosting | El hosting manda `Cache-Control: max-age=604800` (7 días) en css, js, fuentes e imágenes, y **nada** en el HTML. Los archivos de `/_astro/` llevan el hash en el nombre: van con `immutable` de 1 año. El HTML, con `max-age=0, must-revalidate`. |
 | 6 | `base: './'` genera URLs `/./_astro/...` | HTML compilado | Funcionan (el navegador normaliza), pero `base: '/'` es lo correcto para un sitio en la raíz del docroot. |
 | 7 | 2 descripciones pasan de 160 caracteres | `/historia-y-proceso` (170) y `/productos/18x18x24-portante` (170) | Recortarlas: Google las recorta igual. |
 | 8 | Videos en MP4 solamente (9 MB en total) | `/historia-y-proceso` | El plan ya lo tenía pendiente (3.3): agregar WebM. **Ojo: los videos no son un problema de SEO hoy** (van con `preload="none"`), es trabajo de performance para el usuario. |
+
+### Los 6 pares de contraste que fallaban (Lighthouse, 24/10/2026)
+
+| Contraste | Medido | Necesita | Causa |
+|---|---|---|---|
+| `#61200a` sobre `#ff3e00` | 3,45:1 | 4,5:1 | `.stat-note` usaba `rgba(35,21,14,.72)`, que al mezclarse con el naranja daba ese color |
+| `#d6400a` sobre `#f7f5f1` | 4,19:1 | 4,5:1 | `--accent` era demasiado claro para texto chico sobre fondo crema |
+| `#d6400a` sobre `#f2efea` | 3,98:1 | 4,5:1 | el mismo token, sobre la caja de specs |
+| `#8a807a` sobre `#ffffff` | 3,85:1 | 4,5:1 | `--text-soft` era demasiado claro |
+| `#8a807a` sobre `#f2efea` | 3,36:1 | 4,5:1 | el mismo token, sobre la caja de specs |
+| `#ffffff` sobre `#25d366` | **1,98:1** | 4,5:1 | **el botón de WhatsApp**: blanco sobre el verde de marca |
 
 ---
 
@@ -224,14 +235,18 @@ productos.
 
 ### Fase 0 — Esta semana (desbloquea todo lo demás)
 
+**Estado al 24/10/2026: las 5 acciones de la columna "Web" están hechas** (PR
+de la Fase 0, ver `AGENTS.md`). Las de la columna "Empresa" siguen abiertas:
+no se pueden hacer desde el código.
+
 | # | Acción | Quién | Por qué |
 |---|---|---|---|
 | 0.1 | **Google Search Console**: verificar el dominio y enviar el sitemap | Web / empresa | Sin esto, Google no se entera. Es la acción #1. |
 | 0.2 | **Crear la ficha de Google Business Profile** (nombre, dirección, teléfono de planta, horarios, categoría "Fábrica de ladrillos"/"Materiales de construcción", fotos de la planta, WhatsApp) | Empresa | La palanca local #1. El `476985` es el teléfono de planta que figura en el directorio de Cooprico. |
-| 0.3 | **301** de `http://`, `www.` y `https://www.` a la canónica | Web | Contenido duplicado. |
-| 0.4 | **Arreglar el `link-name` del botón** y los **4 contrastes** | Web | Son fallos reales y hoy. |
-| 0.5 | **Optimizar la imagen hero** (LCP) | Web | LCP de 3,1 s → objetivo < 2,5 s. |
-| 0.6 | **Cache-Control en `/_astro/`** | Web | 37 KB por visita. |
+| 0.3 | **301** de `http://`, `www.` y `https://www.` a la canónica | Web ✅ | Contenido duplicado. |
+| 0.4 | **Arreglar el `link-name` del botón** y los **6 contrastes** | Web ✅ | Son fallos reales y hoy. |
+| 0.5 | **Optimizar la imagen hero** (LCP) | Web ✅ | LCP de 3,1 s → objetivo < 2,5 s. |
+| 0.6 | **Cache-Control en `/_astro/`** | Web ✅ | El hosting ya cachea 7 días; ahora los assets con hash van 1 año con `immutable` y el HTML se revalida siempre. |
 | 0.7 | **Verificar el NAP**: dirección (25B o 25C) y teléfono de planta | Empresa | Decidirlo con la empresa y dejarlo igual en todos lados. |
 
 ### Fase 1 — Primer mes (autoridad y contenido)

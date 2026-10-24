@@ -49,8 +49,9 @@
   --brand-rust: #b03a16;         /* CTA de producto */
 
   --brand-orange: #ff3e00;       /* naranja exacto de marca (logo) */
-  --accent: #d6400a;             /* naranja oscurecido: texto e iconos (AA) */
-  --accent-hover: #b83708;
+  --accent: #b83708;             /* naranja oscurecido: texto e iconos sobre fondo CLARO (AA 5.38:1 sobre --page) */
+  --accent-hover: #993005;       /* hover del anterior */
+  --accent-on-dark: #e85f26;     /* naranja claro: texto e iconos sobre anthracita (AA 5.40:1 sobre --brand-ink) */
   --accent-soft: #fff1ea;        /* fondo de chip / badge */
   --accent-line: #fbd2c0;
 
@@ -62,13 +63,15 @@
   --line-strong: #d6cfc5;
 
   --text: #241e1a;
-  --text-muted: #6b625c;
-  --text-soft: #8a807a;
+  --text-muted: #5f574f;         /* 6.51:1 sobre --page */
+  --text-soft: #6f665d;          /* 4.90:1 sobre --surface-alt, 5.62:1 sobre blanco */
   --on-dark: #f5f1ec;
   --on-dark-muted: #b6aca4;
 
   --ok: #1f7a4d;
-  --whatsapp: #25d366;
+  --whatsapp: #25d366;           /* verde de marca: iconos y acentos */
+  --whatsapp-strong: #13833f;    /* fondo del boton, con texto blanco encima (4.83:1) */
+  --whatsapp-strong-hover: #0f7038;
   --error: #b3261e;
 
   /* Alias heredados del sistema anterior */
@@ -249,8 +252,11 @@ a:hover { color: var(--brand-deep); }
   border-color: var(--brand-ink);
 }
 
-.btn-whatsapp { background: var(--whatsapp); color: #fff; }
-.btn-whatsapp:hover { background: #1ebe5d; color: #fff; }
+/* El verde de WhatsApp de marca (#25d366) con texto blanco encima da 1.98:1:
+   no pasa WCAG AA. El boton usa un verde mas profundo y el claro queda para
+   iconos y acentos, donde no hay texto. */
+.btn-whatsapp { background: var(--whatsapp-strong); color: #fff; }
+.btn-whatsapp:hover { background: var(--whatsapp-strong-hover); color: #fff; }
 
 .btn-block { width: 100%; }
 
@@ -307,7 +313,7 @@ a:hover { color: var(--brand-deep); }
   color: var(--accent);
   margin-bottom: var(--space-3);
 }
-.section-eyebrow--light { color: var(--accent); }
+.section-eyebrow--light { color: var(--accent-on-dark); }
 
 /* — Page hero reutilizable — */
 .page-hero {

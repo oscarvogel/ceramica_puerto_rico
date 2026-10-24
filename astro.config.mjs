@@ -7,7 +7,12 @@ const SITE_URL = 'https://ceramicaptorico.com.ar';
 
 export default defineConfig({
   site: SITE_URL,
-  base: './',
+  // El sitio vive en la raiz del docroot (el dominio apunta al docroot, sin
+  // subcarpeta). Con base: './' Astro genera rutas relativas y el HTML
+  // compilado sale con URLs "/./_astro/... ": funcionan porque el navegador
+  // las normaliza, pero no es la forma canónica de pedir un asset.
+  // base: '/' genera "/_astro/...", que es lo que espera un buscador.
+  base: '/',
   // El sitio declara sus URLs sin barra final (ver los `path` del SEO).
   // El .htaccess de producción sirve esas URLs con un 200, sin el 301 que
   // Apache hace por defecto con DirectorySlash. Si esto cambia a 'always',
