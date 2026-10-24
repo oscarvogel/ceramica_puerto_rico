@@ -19,13 +19,18 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
   `trailingSlash: 'never'`, and the preview server does not resolve the
   extensionless paths. To look at the built site, serve `dist/` with a static
   server that maps `/ruta` to `dist/ruta/index.html`.
-- **Full-page screenshots come out with blank sections.** Las fotos de producto
-  van con `loading="lazy"`, así que lo que está por debajo del pliegue sale en
-  blanco hasta que el navegador las carga. Para capturar: scrollear la página
-  entera (o usar `window.scrollTo` con `scrollBehavior = 'auto'`, porque el
-  sitio tiene `scroll-behavior: smooth`), poner las imágenes en `eager` y
+- **Full-page screenshots come out with blank sections.** Las animaciones de
+  entrada son CSS puro (`animation-timeline: view()`), así que lo que está por
+  debajo del pliegue queda en `opacity: 0` hasta que entra en pantalla, y las
+  fotos de producto van con `loading="lazy"`. Para capturar: scrollear la
+  página entera (o usar `window.scrollTo` con `scrollBehavior = 'auto'`, porque
+  el sitio tiene `scroll-behavior: smooth`), poner las imágenes en `eager` y
   recién ahí tomar la captura. **No hay que forzar más `is-visible`: esa clase
   ya no existe.**
+- **El atajo `animation:` rompe las animaciones de scroll.** El atajo deja
+  `animation-duration` en `0s`, y con un timeline de scroll hace falta `auto`
+  explícito: `animation: fade-up auto linear both;` + `animation-timeline:
+  view();`. Sin el `auto`, el contenido queda invisible.
 - **Las fuentes están auto-hospedadas** en `public/fonts/` (Archivo, Inter e
   IBM Plex Mono, subconjunto latin, woff2). **No volver a los links de Google
   Fonts**: agregan dos requests a terceros en el camino crítico y ralentizan
@@ -33,8 +38,11 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
   el `@font-face` en `global.css`.
 - **No hay una clase `.reveal` en el sitio.** Antes `BaseLayout.astro` le ponía
   la clase a todas las secciones (antipatrón de plantilla) y después quedó una
-  regla CSS huérfana que nada usaba. **No la vuelvas a agregar**: si un bloque
-  necesita animarse, se anima ese bloque, no todas las secciones.
+  regla CSS huérfana que nada usaba. **No la vuelvas a agregar**: el reveal se
+  hace **por bloque**, dentro de un `@supports (animation-timeline: view())` +
+  `@media (prefers-reduced-motion: no-preference)`: `.stat`, `.featured-cta`,
+  `.featured-grid > .product-card`, `.plant-cell` y `.cut-fill`. Si agregás un
+  bloque nuevo que deba animarse, sumalo a esa lista explícita.
 - **The company's correction PDF has crossed references.** In
   "correcciones página web.pdf" the link for "Vistos 10x15x24" repeats the one for
   "Livianos 12x18x24", and the two first process videos are swapped (the link under
