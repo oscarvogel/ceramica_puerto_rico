@@ -10,6 +10,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
+    "iconos": "node scripts/generar-iconos.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check"

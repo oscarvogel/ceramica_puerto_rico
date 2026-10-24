@@ -210,6 +210,46 @@ vuelve a pasar, pero **probá directo primero**: con `Test-NetConnection
 a1000380.ferozo.com -Port 21` y una conexión FTPS real, antes de asumir que
 hay ban y perder tiempo levantando un túnel que no hace falta.
 
+### Deploy del favicon (24/10/2026) — iconos del monograma real
+
+| Qué | Detalle |
+|---|---|
+| Problema | `favicon.svg` era un dibujo a mano de la "CP" con la C rota; `favicon.ico` era **un PNG con extensión `.ico`** (655 bytes, firma `89 50 4E 47`); `/apple-touch-icon.png` y el manifest **daban 404** |
+| Arreglo | El favicon ahora usa el **monograma real** extraído de `public/logo.svg` (los subpaths 0, 3 y 21 de su `<path>`), en blanco sobre el naranja de marca `#FF3E00` |
+| Archivos | `favicon.svg` · `favicon.ico` (**ICO real** con 16/32/48, PNG embebido) · `apple-touch-icon.png` (180) · `android-chrome-192x192.png` y `-512x512.png` (maskable) · `site.webmanifest` |
+| Head | `BaseLayout.astro`: `rel="icon"` SVG + ICO, `apple-touch-icon`, `manifest`. El `theme-color` queda **solo en `Seo.astro`** y ahora vale `#FF3E00` (antes `#b8623b`, un terracota del diseño viejo que no era color de marca) |
+| Respaldos del `.htaccess` | `/revision-20261024-1547/.htaccess` (deploy completo) y `/revision-20261024-1609/.htaccess` (subida dirigida del `.htaccess`) |
+
+> **El favicon se deriva del logo, no se dibuja a mano.** El monograma son los subpaths
+> **0** (la C), **3** (la P) y **21** (el hueco de la P) del `<path>` de
+> `public/logo.svg`. El subpath 0 incluye el cola que se prolonga en el
+> subrayado de la marca: se recorta con un `clipPath` en `x = 256` (el
+> subrayado arranca en 258). **No podar el path**: al cerrarlo con `Z` la C se
+> convierte en una O y cambia la marca. El monograma ocupa `x 0..255`,
+> `y 90..363` del `viewBox` del logo.
+>
+> El generador quedó en el repo: **`npm run iconos`** (scripts/generar-iconos.mjs).
+> Recalcula los iconos desde `public/logo.svg` y **falla con un error claro**
+> si el monograma se movió, en vez de sacar un favicon roto.
+
+> **Los navegadores NO revalidan el favicon.** Con el mismo `/favicon.svg`, el
+> sitio seguía mostrando el icono viejo en la pestaña (se vio en el navegador
+> después de publicar: la URL sin cambios devolvía la copia cacheada). Por eso
+> las URLs de los iconos llevan **`?v=<hash del contenido>`**: al cambiar el
+> icono cambia el hash, cambia la URL y el navegador vuelve a pedirlo. El hash
+> lo calcula `BaseLayout.astro` al compilar, leyendo `public/favicon.svg`.
+
+> **El hosting no conoce la extensión `.webmanifest`**: sin `Content-Type`, el
+> manifest bajaba pelado y Chrome lo descarta (solo acepta
+> `application/manifest+json`, `application/json` o `text/json`). Se agregó al
+> `.htaccess`:
+>
+> ```
+> <IfModule mod_mime.c>
+>   AddType application/manifest+json .webmanifest
+> </IfModule>
+> ```
+
 ### Cuidado: no listar el docroot entero por FTP (23/10/2026, 15:50)
 
 La verificación de tamaños (`Test-Tree`) listaba **todas** las carpetas del

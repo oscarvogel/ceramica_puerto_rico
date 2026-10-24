@@ -45,6 +45,15 @@ ErrorDocument 404 /404.html
   </FilesMatch>
 </IfModule>
 
+# El manifest del sitio (site.webmanifest) lo pide el navegador para los
+# iconos de la app y el color de tema. Este hosting no conoce la extension
+# .webmanifest: sin esta regla el archivo baja SIN Content-Type y Chrome
+# descarta el manifest (solo acepta application/manifest+json,
+# application/json o text/json).
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
 

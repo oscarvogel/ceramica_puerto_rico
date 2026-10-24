@@ -9,6 +9,10 @@ import Footer from '../components/Footer.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import BackToTop from '../components/BackToTop.astro';
 import Seo from '../components/Seo.astro';
+import fs from 'node:fs';
+// Aliaseado: la prop `path` de Astro usa ese nombre y lo pisa.
+import nodePath from 'node:path';
+import { createHash } from 'node:crypto';
 
 interface Props {
   title: string;
@@ -23,6 +27,18 @@ interface Props {
 
 const { title, description, path, ogImage, type, breadcrumbs, faqJsonLd, productJsonLd } =
   Astro.props;
+
+/**
+ * Version de los iconos: hash del contenido del favicon.svg.
+ * Los navegadores cachean los favicon y no los revalidan, asi que si la URL
+ * no cambia el sitio sigue mostrando el icono viejo aunque se publique uno
+ * nuevo. Con el hash en la URL, cambiar el icono cambia la URL y el
+ * navegador vuelve a pedirlo. Se regenera con `npm run iconos`.
+ */
+const iconVersion = createHash('sha256')
+  .update(fs.readFileSync(nodePath.join(process.cwd(), 'public', 'favicon.svg')))
+  .digest('hex')
+  .slice(0, 8);
 ---
 
 <!doctype html>
@@ -32,8 +48,15 @@ const { title, description, path, ogImage, type, breadcrumbs, faqJsonLd, product
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- Iconos. El favicon usa el monograma real de la marca (public/logo.svg),
+         no un dibujo a mano: SVG para los navegadores modernos, .ico real con
+         16/32/48 para los viejos, apple-touch-icon para iOS y manifest para
+         Android (que antes daba 404). El ?v= es el hash del contenido: sin el,
+         el navegador sigue mostrando el icono viejo (no revalida el favicon). -->
+    <link rel="icon" type="image/svg+xml" href={`/favicon.svg?v=${iconVersion}`} />
+    <link rel="icon" href={`/favicon.ico?v=${iconVersion}`} sizes="16x16 32x32 48x48" />
+    <link rel="apple-touch-icon" href={`/apple-touch-icon.png?v=${iconVersion}`} />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Las tipografías están auto-hospedadas: cero requests a terceros en el
          camino crítico. Se precargan las dos que se ven en el primer pintado. -->

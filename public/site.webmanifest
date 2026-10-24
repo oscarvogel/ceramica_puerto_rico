@@ -1,0 +1,41 @@
+{
+  "name": "Cerámica Puerto Rico",
+  "short_name": "CPR",
+  "description": "Ladrillos cerámicos hechos en Puerto Rico, Misiones.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FF3E00",
+  "lang": "es-AR",
+  "icons": [
+    {
+      "src": "/favicon.svg?v=5d34dea1",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico?v=5d34dea1",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png?v=5d34dea1",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-192x192.png?v=5d34dea1",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png?v=5d34dea1",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
