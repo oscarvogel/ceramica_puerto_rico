@@ -147,7 +147,7 @@ const waQuote = encodeURIComponent(
       <ul class="stats-list">
         {stats.map((s) => (
           <li class="stat">
-            <span class="stat-value mono">{s.value}</span>
+            <span class="stat-value mono" data-count={s.value}>{s.value}</span>
             <span class="stat-label">{s.label}</span>
             <span class="stat-note">{s.note}</span>
           </li>
@@ -907,6 +907,49 @@ const waQuote = encodeURIComponent(
     .split-grid { grid-template-columns: 1fr; gap: var(--space-7); }
   }
 
+  /* — Movimiento: sólo tres bloques de la home se revelan al entrar —
+     El resto aparece de una. Un reveal en cada sección se lee como
+     plantilla (y retrasa el contenido que el visitante vino a buscar).
+     Todo en CSS nativo: animation-timeline + view(), sin JavaScript. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .stat {
+        animation: stat-in auto linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 40%;
+      }
+      .stat:nth-child(2) { animation-range: entry 3% entry 43%; }
+      .stat:nth-child(3) { animation-range: entry 6% entry 46%; }
+      .stat:nth-child(4) { animation-range: entry 9% entry 49%; }
+
+      .featured-cta {
+        animation: bento-in auto linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 30%;
+      }
+      /* Los productos son otro componente: Astro scopea los estilos, así que
+         hace falta :global() para llegar a la raíz de <ProductCard />. */
+      .featured-grid > :global(.product-card) {
+        animation: bento-in auto linear both;
+        animation-timeline: view();
+        animation-range: entry 2% entry 32%;
+      }
+      .featured-grid > :global(.product-card):nth-child(3) { animation-range: entry 5% entry 35%; }
+      .featured-grid > :global(.product-card):nth-child(4) { animation-range: entry 8% entry 38%; }
+      .featured-grid > :global(.product-card):nth-child(5) { animation-range: entry 11% entry 41%; }
+      .featured-grid > :global(.product-card):nth-child(6) { animation-range: entry 14% entry 44%; }
+    }
+  }
+
+  @keyframes stat-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes bento-in {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: none; }
+  }
+
   /* — CTA exprés — */
   .cta-block {
     background: var(--brand-ink);
@@ -1030,3 +1073,43 @@ const waQuote = encodeURIComponent(
     .cta-fields { grid-template-columns: 1fr; gap: 0; }
   }
 </style>
+
+<script>
+  /* Contador de la franja de datos: una sola vez, al entrar en pantalla.
+     Con prefers-reduced-motion el número queda como está. */
+  const counters = document.querySelectorAll<HTMLElement>('[data-count]');
+
+  if (counters.length) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduce || !('IntersectionObserver' in window)) {
+      counters.forEach((el) => (el.textContent = el.dataset.count ?? el.textContent));
+    } else {
+      const format = (n: number) => String(n);
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target as HTMLElement;
+            io.unobserve(el);
+            const target = Number(el.dataset.count);
+            if (!Number.isFinite(target)) return;
+
+            const duration = 900;
+            const start = performance.now();
+            const tick = (now: number) => {
+              const t = Math.min((now - start) / duration, 1);
+              // easeOutCubic
+              const eased = 1 - Math.pow(1 - t, 3);
+              el.textContent = format(Math.round(target * eased));
+              if (t < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          });
+        },
+        { threshold: 0.4 },
+      );
+      counters.forEach((el) => io.observe(el));
+    }
+  }
+</script>

@@ -403,6 +403,9 @@ a.card:hover {
   border: 1px solid var(--accent-line);
 }
 
+/* — Transición entre páginas (0 KB de JS) — */
+@view-transition { navigation: auto; }
+
 /* — Skip link — */
 .skip-link {
   position: absolute;

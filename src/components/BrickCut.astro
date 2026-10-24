@@ -8,8 +8,11 @@
  * La cara de 12 × 18 cm tiene 6 celdas en 2 columnas × 3 filas, de 6 × 6 cm,
  * que atraviesan los 24 cm de largo.
  *
- * Es la firma de la home: las celdas del corte muestran la aislación térmica
- * de un vistazo.
+ * Es la firma de la home: al entrar en pantalla las celdas se van llenando
+ * de terracota y con ese único gesto se explica la aislación térmica.
+ *
+ * Movimiento en CSS puro (animation-timeline: view()). Si el navegador no
+ * lo soporta, el dibujo se muestra completo y estático.
  */
 interface Props {
   caption?: string;
@@ -109,11 +112,32 @@ const CELDA_H = 80;
   /* El hueco visto de frente: en sombra. */
   .cut-void { fill: #3b2118; }
 
-  /* El relleno: estado base = celdas encendidas. El dibujo se ve completo
-     aunque no haya animación. */
+  /* El relleno: estado base = celdas encendidas (si el navegador no
+     soporta la animación, el dibujo se ve completo). */
   .cut-fill {
     fill: var(--brand-rust);
     opacity: 1;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .cut-fill {
+        animation: cut-fill-in auto linear both;
+        animation-timeline: view();
+        animation-range: entry 8% cover 26%;
+      }
+      /* Escalonado: cada celda se enciende un poco después que la anterior. */
+      .cut-fill--2 { animation-range: entry 12% cover 30%; }
+      .cut-fill--3 { animation-range: entry 16% cover 34%; }
+      .cut-fill--4 { animation-range: entry 20% cover 38%; }
+      .cut-fill--5 { animation-range: entry 24% cover 42%; }
+      .cut-fill--6 { animation-range: entry 28% cover 46%; }
+    }
+  }
+
+  @keyframes cut-fill-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   .cut-dim {
