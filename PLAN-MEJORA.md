@@ -829,5 +829,10 @@ No rompen nada — el `index.html` remoto referencia **exactamente 3 CSS y 2 fue
 - **Destino de la medición** (GA4, Plausible o log propio).
 - **Levantar el ban de la IP**: ~~mientras siga vigente, los deploys tienen que ir por el túnel~~ → **resuelto el 24/10/2026**: el ban se levantó solo y el deploy del PR #19 salió directo.
 - **3.3** WebM de los videos · **3.6** eventos de conversión · **3.7** `llms.txt` · **4.1** Lighthouse · **4.4** Rich Results.
+- **Indexación y SEO local** (24/10/2026): el sitio sigue **sin indexar**
+  (`site:ceramicaptorico.com.ar` → 0 resultados). La investigación y el plan
+  están en **`PLAN-SEO.md`**. Lo que depende de la empresa y no del repo:
+  Search Console, ficha de Google Business Profile, definir el NAP (Lote 25B o
+  25-C) y el teléfono de planta 476985, y decidir si se publican precios.
 
 

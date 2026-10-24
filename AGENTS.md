@@ -275,6 +275,73 @@ a1000380.ferozo.com -Port 443` y con un proxy externo; si el panel de Ferozo
 muestra la cuenta suspendida por exceso de conexiones, hay que desbloquearla o
 avisar al hosting.
 
+## SEO (24/10/2026)
+
+La investigación completa está en **`PLAN-SEO.md`** (diagnóstico medido sobre el
+sitio publicado + plan por fases). Acá van solo los datos operativos.
+
+### La línea de base medida
+
+| Métrica | Valor |
+|---|---|
+| Lighthouse SEO / Performance / Best Practices / Accessibility | **100 / 94 / 100 / 93** |
+| `site:ceramicaptorico.com.ar` | **0 resultados** (no indexado) |
+| Googlebot en `/` | 200 con el HTML completo (0,86 s) |
+| Páginas / URLs del sitemap | 23 / 23, **0 huérfanas** |
+| Imágenes sin `alt` | **0** |
+
+**La parte técnica no es el cuello de botella.** El problema es autoridad: no hay
+Search Console, no hay backlinks, no hay ficha de Google Business Profile y la
+web tiene un día de vida.
+
+### Lo que hay que saber antes de tocar el SEO
+
+- **El nombre "Puerto Rico" choca con el territorio de EE.UU.** No se cambia la
+  marca (es el nombre legal registrado): se compensa **poniendo el geolocalizador
+  en todas las páginas** ("Misiones", "Colonia San Alberto", "Capioví") y
+  atacando la cola larga local (`ladrillos cerámicos Misiones`,
+  `ladrillos Capioví`, `ladrillos para obra gris Misiones`).
+- **No hay Search Console.** Nadie lo dio de alta ni envió el sitemap. Es la
+  acción #1 del plan y **no se puede hacer desde el repo**: lo tiene que hacer
+  la empresa.
+- **El NAP está sin resolver**: el sitio dice "Lote 25B" (Boletín Oficial Nº
+  15871) y el directorio de Cooprico dice "Lote 25-C", con los teléfonos
+  476985 / 476986. **El sitio no publica el 476985** (teléfono de planta del
+  SPEC). Hasta que la empresa decida, no se cambia nada.
+- **`company.geo` sigue en `pending: true`** y `Seo.astro` no lo emite: sin
+  coordenadas confirmadas no se inventa el schema. Lo mismo con `hasMap` y
+  `priceRange`.
+- **La web se publicó el 23-24/10/2026**: es demasiado nueva para esperar
+  posicionamientos. No se puede medir indexación real sin Search Console.
+
+### Hallazgos técnicos medidos (24/10/2026)
+
+| # | Qué | Dónde / arreglo |
+|---|---|---|
+| 1 | **4 variantes de URL responden 200** sin redirigir (`http://`, `https://`, `www.` y sin `www.`) | `.htaccess`: falta el 301 a la canónica `https://ceramicaptorico.com.ar` |
+| 2 | **LCP 3,1 s** (objetivo < 2,5 s) | el hero `portada-deposito.webp` pesa 227 KB; Lighthouse estima 191 KB de ahorro |
+| 3 | **Contraste insuficiente** en 4 pares de color | `--accent` #d6400a sobre #f7f5f1 (4,19:1), `#61200a` sobre #ff3e00 (3,45:1), `--text-muted` #8a807a sobre blanco (3,85:1) y sobre #f2efea (3,36:1). **El naranja de marca es intocable**: se oscurece el texto |
+| 4 | **El CTA "Pedir Presupuesto" no tiene nombre accesible a ≤480 px** | `Header.astro`: el `<span>` se oculta con `display:none` y el SVG es `aria-hidden` → falta un `aria-label` fijo |
+| 5 | **CSS/JS de `/_astro/` sin `Cache-Control`** (solo ETag) | `.htaccess`: falta `Cache-Control: public, max-age=31536000, immutable` |
+| 6 | `base: './'` genera URLs `/./_astro/...` | `astro.config.mjs`: lo correcto para un sitio en la raíz del docroot es `base: '/'` |
+| 7 | `openingHoursSpecification` se emite como **objeto**; schema.org lo define como **array** | `Seo.astro` |
+| 8 | 2 descripciones pasan de 160 caracteres | `/historia-y-proceso` y `/productos/18x18x24-portante` (170 cada una) |
+
+> **No cambies títulos, URLs ni contenido sin leer `PLAN-SEO.md`.** El sitio no
+> está indexado todavía: cambiar la estructura ahora tira el trabajo de
+> indexación que falta.
+
+### Lo que NO aparece en las 23 páginas (y es lo que el comprador busca)
+
+`precio`, `dosificación` (cemento/cal/arena), `tracción`, `donde comprar`,
+`visita a planta`, `envío`/`flete`/`entrega` y **ninguna ciudad de la zona**
+(Oberá, Posadas, Eldorado, Garuhapé, Montecarlo, Andresito, Capioví). Los
+competidores nacionales (Construshop, Nicoletti, Jacquet, Alberdi) **publican
+precios**, y en Misiones hay 14 fábricas de ladrillo sin presencia web.
+
+Además, **13 de las 23 páginas tienen menos de 330 palabras**: las más flacas
+son `/distribuidores` (242) y `/aplicaciones/encadenados` (271).
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
