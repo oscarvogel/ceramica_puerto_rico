@@ -250,6 +250,27 @@ hay ban y perder tiempo levantando un túnel que no hace falta.
 > </IfModule>
 > ```
 
+### Deploy de la Fase 0 del SEO (24/10/2026) — PR #20
+
+| Qué | Detalle |
+|---|---|
+| Contenido | Los 8 hallazgos de la sección 4 de `PLAN-SEO.md`: 301 de las 4 variantes de URL, los 6 contrastes, el `link-name` del CTA, el LCP del hero, la cache, `base: '/'`, el schema y las 2 descripciones largas |
+| Merge | PR #20, commit `3bdfa71` |
+| Archivos | **80 del sitio + 348 de `vendor/`**, subidos de a uno, con **0 tamaños distintos** y las cuatro rutas en 200. `deploy.cmd` salió con código **0** |
+| Respaldo del `.htaccess` | `/revision-20261024-1808/.htaccess` |
+
+**Verificado contra el sitio publicado, no contra el código:**
+
+| Chequeo | Resultado |
+|---|---|
+| `http://`, `https://www.` y `www.` | **301** a `https://ceramicaptorico.com.ar/` (antes 200) |
+| `Cache-Control` del HTML | `public, max-age=0, must-revalidate` (antes no habia header) |
+| `Cache-Control` de `/_astro/` | `public, max-age=31536000, immutable` |
+| Content-Type de las imagenes | `image/webp` (las 4 variantes del hero) y `image/png` (el logo) |
+| Schema | `logo` -> `/logo.png`; `openingHoursSpecification` como array de 2 tramos |
+| Lighthouse en producción | **Performance 98 · Accessibility 100 · Best Practices 100 · SEO 100**; LCP **3,1 s -> 2,21 s**; CLS 0; TBT 0 ms |
+| Peso total de la home | **2,3 MB -> 254 KB** |
+
 ### Cuidado: no listar el docroot entero por FTP (23/10/2026, 15:50)
 
 La verificación de tamaños (`Test-Tree`) listaba **todas** las carpetas del
