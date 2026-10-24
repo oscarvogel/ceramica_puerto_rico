@@ -639,16 +639,14 @@ deploy.cmd
 
 ## 23/10/2026 — Implementación de las Fases 0, 1 y 2
 
-**Estado:** implementado, verificado y **visible en local** (`http://localhost:4321`). **Nada subido al hosting todavía.**
+**Estado:** implementado, verificado, publicado en dos rondas y **visible en producción**.
 
-**Dónde está:** el rediseño se publica **en dos rondas** (ver §5.1), con una rama y un PR por ronda:
+**Dónde está:** el rediseño se publicó **en dos rondas** (ver §5.1), cada una con su rama, su PR y su deploy:
 
-| Ronda | Rama | PR | Commit |
+| Ronda | Rama | PR | Qué salió |
 |---|---|---|---|
-| 1 — el diseño (Fases 0 y 1) | `feature/publicacion-1-diseno` | **#14** | `feat(home): rediseña la home con sistema de diseño propio (publicación 1 de 2)` — 17 archivos, +1981 / −438 |
-| 2 — el movimiento (Fase 2) | `feature/publicacion-2-movimiento` | **#15** | `feat(movimiento): suma la capa de movimiento en CSS nativo (publicación 2 de 2)` — 6 archivos, +183 / −12 |
-
-`main` sigue en `bc8a4fe`: el rediseño **no está mergeado**, así que el hosting puede seguir mostrando la versión anterior.
+| 1 — el diseño (Fases 0 y 1) | `feature/publicacion-1-diseno` | **#14** | La home nueva, sin animaciones |
+| 2 — el movimiento (Fase 2) | `feature/publicacion-2-movimiento` | **#15** | La capa de movimiento encima |
 
 ### Qué se hizo
 
@@ -751,7 +749,7 @@ M src/data/distributors.ts        M AGENTS.md
 | 2 | **`unitsPerM2` de los 9 productos** | Es `null` en todos. Sin ese dato **la calculadora del SPEC §28 no se puede construir** con datos reales |
 | 3 | Confirmación de las cifras de la franja | 1975 sale de la cronología ya publicada; 405 un/palet y 9 modelos salen del catálogo. Falta el OK explícito |
 | 4 | Definir el destino de la medición | GA4, Plausible o log propio. Sin esto la Fase 3 queda a medias |
-| 5 | Aprobar el rediseño y decidir la publicación | ¿En una o en dos publicaciones? La recomendación sigue siendo **dos**: Fases 0-1 primero, Fase 2-3 después. El código ya está en el **PR #13** |
+| 5 | Aprobar el rediseño y decidir la publicación | **Resuelto**: se publica en dos rondas (PR #14 y PR #15), ya mergeados y publicados |
 
 **Técnicos (pueden hacerse sin esperar al cliente):**
 - **3.3** versión WebM de los 3 videos de proceso (`03-prensado-ladrillos` pesa 4 MB en MP4).
@@ -761,4 +759,73 @@ M src/data/distributors.ts        M AGENTS.md
 - **4.5** deploy por FTPS con el procedimiento de `deploy.ps1` (backup del `.htaccess` → subir archivo por archivo → verificar tamaños → subir el `.htaccess` al final).
 
 **Decisión de producto abierta:** el corte del ladrillo es la firma visual del rediseño. Hoy muestra la geometría que se deduce de la foto real. Si el plano oficial difiere, hay que redibujar `BrickCut.astro` — es un componente aislado y el cambio no toca el resto de la home.
+
+---
+
+## 24/10/2026 — Publicación en dos rondas
+
+**Estado:** el rediseño está **publicado en producción**, en dos rondas y con dos deploys.
+
+### Qué se publicó
+
+| Ronda | PR | Qué salió | `.htaccess` anterior respaldado en |
+|---|---|---|---|
+| 1 | #14 | El diseño: home nueva, tipografía propia, bento, galería, corte del ladrillo | `/revision-20261024-0829/.htaccess` |
+| 2 | #15 | La capa de movimiento | `/revision-20261024-0914/.htaccess` |
+
+Cada ronda: **72 archivos del sitio + 348 de `vendor/`**, subidos de a uno, con **0 tamaños distintos** y las cuatro rutas de control en **200**.
+
+### El bloqueo de IP (y cómo se destrabó)
+
+El hosting tenía **baneada la IP de la máquina que publica** (`186.5.245.12`): los puertos 21, 22, 80, 443, 2083, 2087, 8443 y 3306 no respondían y el ping tampoco, pero **desde el exterior el sitio respondía perfecto** — con un lector remoto se recuperó la versión vieja sin problema. O sea: el origen estaba sano, lo que no llegaba era esta máquina. Es la huella del incidente del 23/10, cuando el deploy listaba el docroot entero por FTP.
+
+**Solución: salir por un túnel SOCKS5.** No hizo falta comprar una VPN:
+
+```
+ssh -N -D 1081 anasociados          # el VPS, 1,1 s por conexión
+set FTP_SOCKS5=127.0.0.1:1080       # o la mac-mini por Tailscale, 2,9 s
+deploy.cmd
+```
+
+`deploy.ps1` ahora acepta `FTP_SOCKS5` y agrega `--socks5-hostname` a todas las llamadas de `curl` (PR #16). Sin la variable, se comporta exactamente como antes.
+
+> **Por qué `--socks5-hostname` y no un reenvío TCP local (`ssh -L`).** Con `--socks5-hostname` la resolución del nombre la hace el proxy, pero la validación del certificado TLS sigue usando el hostname real. Con `-L` contra `127.0.0.1` el certificado no coincide con el host y **curl corta con error 60**, aunque el túnel esté perfecto. Se probaron los dos: el reenvío local no sirve para FTPS.
+
+### Segundo bug encontrado: `deploy.cmd` devolvía 255 con el deploy hecho
+
+El bloque `if not "%CODE%"=="0" (...)` de `deploy.cmd` tiene dos `echo` con paréntesis y ángulos:
+
+```bat
+echo  El deploy termino con error (codigo %CODE%).
+echo  Se dejo el .htaccess anterior respaldado en /revision-<sello>/.htaccess
+```
+
+`cmd.exe` parsea el bloque entero antes de ejecutarlo, y el `(` del primer `echo` cuenta como **apertura de sub-bloque**: el `)` lo cierra y el `.` que queda huérfano hace que el script tire *"No se esperaba . en este momento"* y **devuelva 255**. El error salía **después** de que todo estuviera hecho, así que el deploy se publicaba igual pero el proceso reportaba fallo. Se escaparon los caracteres: `^(codigo %CODE%^)` y `/revision-^<sello^>/` (PR #17).
+
+### Cómo se verificó que lo publicado es lo nuevo
+
+| Prueba | Resultado |
+|---|---|
+| Contenido remoto de `index.html` | H1 **"Ladrillos cerámicos hechos en Misiones para construir nuestra región"** ✅ |
+| Marcas del sitio viejo | "+50 Años", "100% Producción regional", "A confirmar" y "Pendiente de validación": **ausentes** ✅ |
+| Marcas del sitio nuevo | "hechos en Misiones", "Qué necesitás construir" y la fuente auto-hospedada `archivo-latin-var`: **presentes** ✅ |
+| `.htaccess` remoto | 3738 bytes, con `DirectorySlash Off` ✅ |
+| Captura del sitio en producción | H1 correcto; las capturas pesan **exactamente lo mismo** que las del build local verificado (428 KB / 3.011 KB) ✅ |
+
+La verificación visual se hizo con Chrome **saliendo por el túnel** (`--proxy-server=socks5://127.0.0.1:1081`): desde esta máquina el navegador tampoco llega al sitio, porque el bloqueo es de IP.
+
+### Un detalle que quedó en el hosting: CSS viejos acumulados
+
+El deploy **sube pero nunca borra**, así que en `_astro/` quedan los CSS con hash de deploys anteriores: **8 archivos muertos** al terminar las dos rondas (4 de `BaseLayout`, 3 de `ProductCard`, 4 de `index`, de los cuales sólo 3 están referenciados).
+
+No rompen nada — el `index.html` remoto referencia **exactamente 3 CSS y 2 fuentes, y 0 JS**, que son los del build actual. Pero se acumulan con cada deploy y consumen espacio. Si algún día hay que limpiar, hay que hacerlo con cuidado: **no se puede borrar el `_astro/` entero**, porque el `index.html` de cada subcarpeta (`/productos/...`, `/aplicaciones/...`) apunta a los CSS con hash de su propio build.
+
+### Pendientes que siguen abiertos
+
+- **Plano oficial del ladrillo**: la geometría del corte se dedujo de la foto real y del texto del catálogo ("seis celdas"). Si el plano difiere, hay que redibujar `BrickCut.astro`.
+- **`unitsPerM2`**: sigue `null` en los 9 productos, así que la calculadora del SPEC §28 continúa sin construir.
+- **Destino de la medición** (GA4, Plausible o log propio).
+- **Levantar el ban de la IP**: mientras siga vigente, los deploys tienen que ir por el túnel.
+- **3.3** WebM de los videos · **3.6** eventos de conversión · **3.7** `llms.txt` · **4.1** Lighthouse · **4.4** Rich Results.
+
 
