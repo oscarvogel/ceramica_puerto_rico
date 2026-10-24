@@ -120,6 +120,14 @@ el 990 está cerrado), así que la subida necesita `--ssl-reqd`.
 - **El `.htaccess` se sube al final, a propósito.** Hasta que no está, el
   servidor sigue con el de WordPress y el sitio no cambia. Si el nuevo fuera a
   romper algo, el anterior sigue ahí para volver atrás.
+- **Cuidado con los paréntesis y los `<>` en los `echo` dentro de un bloque
+  `if (...)` de un `.cmd`.** `cmd.exe` parsea el bloque entero antes de
+  ejecutarlo, y un `(` en el texto de un `echo` cuenta como apertura de
+  sub-bloque: el `)` lo cierra y lo que queda queda huérfano. Con
+  `echo  error (codigo %CODE%).` el script tiraba *"No se esperaba . en este
+  momento"* y **devolvía 255 aunque el deploy hubiera salido bien** — el
+  error salía después de que todo estaba hecho. Los paréntesis y los ángulos
+  van escapados: `^(codigo %CODE%^)` y `/revision-^<sello^>/`.
 - **`DirectorySlash Off` es lo que hace que funcionen las URLs.** El sitio
   declara sus URLs sin barra final (`/productos/12x18x24-liviano`) y Apache, con
   `DirectorySlash` por defecto, responde a esas con un 301 a la versión con
