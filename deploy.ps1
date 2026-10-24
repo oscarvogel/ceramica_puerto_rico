@@ -34,6 +34,25 @@ $curl   = "$env:SystemRoot\System32\curl.exe"
 # Pausa entre conexiones FTP, en milisegundos (0 = sin pausa).
 $script:FtpPausaMs = if ($env:FTP_PAUSA_MS) { [int]$env:FTP_PAUSA_MS } else { 300 }
 
+# --- Tunel opcional (SOCKS5) ---
+# El hosting puede bloquear la IP de origen (el 23/10/2026 pasó: el deploy
+# listaba el docroot entero y el servidor banió la IP). Cuando eso pasa, el
+# deploy se puede hacer salir por un tunel:
+#
+#   ssh -N -D 1080 <servidor-con-acceso-al-hosting>
+#   set FTP_SOCKS5=127.0.0.1:1080
+#   deploy.cmd
+#
+# Se usa --socks5-hostname y no un reenvio TCP local (-L) a proposito: con
+# --socks5-hostname la resolucion del nombre la hace el proxy pero la
+# validacion del certificado TLS sigue usando el hostname real. Con un
+# reenvio a 127.0.0.1 el certificado no coincide y curl corta con error 60.
+$socks = if ($env:FTP_SOCKS5) { @('--socks5-hostname', $env:FTP_SOCKS5) } else { @() }
+$script:SocksArgs = $socks
+if ($socks.Count -gt 0) {
+  Write-Host "Tunel SOCKS5: $($env:FTP_SOCKS5) (el deploy sale por esa IP)"
+}
+
 # --- credenciales ---
 $credFile = Join-Path $repo '.ferozo-credentials'
 if ($credFile -and (Test-Path -LiteralPath $credFile)) {
@@ -56,7 +75,7 @@ $base = "ftp://$($env:FTP_HOST)$($env:FTP_DIR)"
 
 function Invoke-Ftp {
   param([string[]]$CurlArgs)
-  & $curl @CurlArgs
+  & $curl @script:SocksArgs @CurlArgs
 }
 
 function Get-RemoteSizes {
@@ -230,7 +249,7 @@ if (-not $DryRun) {
 Write-Host ''
 Write-Host 'Comprobando el sitio...'
 foreach ($u in @('/','/productos/12x18x24-liviano','/historia-y-proceso','/contacto')) {
-  $code = & $curl -s -o NUL -w '%{http_code}' --max-time 30 "https://ceramicaptorico.com.ar$u"
+  $code = & $curl @socks -s -o NUL -w '%{http_code}' --max-time 30 "https://ceramicaptorico.com.ar$u"
   Write-Host ("  {0}  {1}" -f $code, $u)
 }
 Write-Host ''
