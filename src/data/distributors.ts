@@ -30,7 +30,6 @@ export const distributors: Distributor[] = [
     mapsUrl: 'https://maps.google.com/?q=Puerto+Rico+Misiones',
     notes: 'Punto oficial de venta directa en planta.',
   },
-  // Los siguientes son PLACEHOLDER — completar con lista validada por la empresa
 ];
 
 export const getDistributorBySlug = (slug: string) =>

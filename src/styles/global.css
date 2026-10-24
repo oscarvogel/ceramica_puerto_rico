@@ -4,8 +4,41 @@
    - marrón/antracita profundo para barra superior y CTAs
    - naranja terracota para eyebrows, iconos y acentos
    - blanco cálido y gris perla para superficies
-   Tipografía: Inter (sans serif grotesca, SPEC §29)
+   Tipografía (auto-hospedada, sin requests a terceros):
+   - Archivo  → display (titulares, cifras)
+   - Inter    → texto (párrafos, UI, formularios)
+   - Plex Mono→ datos (medidas, pesos, rindimientos)
    ============================================================= */
+
+/* — Fuentes auto-hospedadas (woff2, subconjunto latin) — */
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-latin-var.woff2') format('woff2-variations');
+  font-weight: 500 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-latin-var.woff2') format('woff2-variations');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/ibm-plex-mono-latin-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/ibm-plex-mono-latin-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   /* — Marca — */
@@ -58,9 +91,12 @@
   --color-acento-cta-hover: #1ebe5d;
 
   /* — Tipografía — */
+  --font-display: 'Archivo', 'Inter', system-ui, -apple-system, 'Segoe UI',
+                  Roboto, sans-serif;
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto,
                'Helvetica Neue', Arial, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas,
+               monospace;
 
   --fs-50:  0.6875rem;
   --fs-100: 0.8125rem;
@@ -71,7 +107,7 @@
   --fs-600: 1.625rem;
   --fs-700: 2rem;
   --fs-800: 2.5rem;
-  --fs-900: clamp(2.25rem, 4.2vw, 3.375rem);
+  --fs-900: clamp(2.375rem, 4.6vw, 3.75rem);
 
   --lh-tight: 1.14;
   --lh-snug:  1.3;
@@ -103,6 +139,7 @@
   --shadow-sm: 0 1px 2px rgba(36, 30, 26, 0.05);
   --shadow-md: 0 4px 14px rgba(36, 30, 26, 0.07);
   --shadow-lg: 0 14px 36px rgba(36, 30, 26, 0.10);
+  --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.28);
 
   /* — Transiciones — */
   --t-fast: 150ms ease;
@@ -135,14 +172,15 @@ h1, h2, h3, h4 {
   margin: 0 0 var(--space-3);
   line-height: var(--lh-tight);
   color: var(--brand-ink);
+  font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: -0.021em;
   text-wrap: balance;
 }
-h1 { font-size: var(--fs-900); letter-spacing: -0.03em; }
-h2 { font-size: var(--fs-800); }
-h3 { font-size: var(--fs-500); }
-h4 { font-size: var(--fs-400); }
+h1 { font-size: var(--fs-900); letter-spacing: -0.032em; font-weight: 800; }
+h2 { font-size: var(--fs-800); letter-spacing: -0.028em; }
+h3 { font-size: var(--fs-500); font-weight: 650; }
+h4 { font-size: var(--fs-400); font-weight: 650; }
 
 p { margin: 0 0 var(--space-4); text-wrap: pretty; }
 
@@ -229,6 +267,35 @@ a:hover { color: var(--brand-deep); }
 }
 .section--dark h1, .section--dark h2, .section--dark h3, .section--dark h4 { color: #fff; }
 .section--dark p { color: var(--on-dark-muted); }
+
+/* Superficie de arena: bloques de lectura Alternados, para que la página
+   tenga profundidad y no sea una sola superficie crema de arriba abajo. */
+.section--sand { background: var(--surface-alt); }
+
+/* — Utilidades tipográficas — */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Rótulo de dato: texto chico arriba, valor en mono abajo. Es la forma en
+   que se muestran medidas, pesos y rindimientos en todo el sitio. */
+.data-row { display: flex; flex-direction: column; gap: 0.1rem; }
+.data-row dt {
+  font-size: var(--fs-50);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-soft);
+}
+.data-row dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-200);
+  font-weight: 500;
+  color: var(--brand-ink);
+}
 
 /* Eyebrow naranja en mayúsculas, como en la referencia */
 .section-eyebrow {
@@ -334,17 +401,6 @@ a.card:hover {
   text-transform: uppercase;
   letter-spacing: 0.07em;
   border: 1px solid var(--accent-line);
-}
-
-/* — Reveal on scroll — */
-.reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-.reveal.is-visible { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
 }
 
 /* — Skip link — */

@@ -1,0 +1,139 @@
+---
+/**
+ * BrickCut.astro — corte transversal del ladrillo hueco 12×18×24.
+ *
+ * LA GEOMETRÍA NO ES INVENTADA: sale de la foto real del producto
+ * (public/images/productos/12x18x24-liviano.webp) y del texto alternativo
+ * del catálogo ("ladrillo hueco liviano de 12x18x24 cm con seis celdas").
+ * La cara de 12 × 18 cm tiene 6 celdas en 2 columnas × 3 filas, de 6 × 6 cm,
+ * que atraviesan los 24 cm de largo.
+ *
+ * Es la firma de la home: las celdas del corte muestran la aislación térmica
+ * de un vistazo.
+ */
+interface Props {
+  caption?: string;
+}
+
+const { caption } = Astro.props;
+
+/** Las 6 celdas, medidas en el viewBox (240 × 360 = 12 × 18 cm). */
+const celdas = [
+  { x: 33, y: 29 },
+  { x: 130, y: 29 },
+  { x: 33, y: 130 },
+  { x: 130, y: 130 },
+  { x: 33, y: 231 },
+  { x: 130, y: 231 },
+];
+const CELDA_W = 76;
+const CELDA_H = 80;
+---
+
+<figure class="brick-cut">
+  <svg
+    class="brick-cut-svg"
+    viewBox="-38 -8 286 380"
+    role="img"
+    aria-label="Corte transversal de un ladrillo cerámico hueco de 12 por 18 centímetros, con seis celdas de 6 por 6 centímetros en dos columnas y tres filas"
+  >
+    <!-- Cuerpo del ladrillo (arcilla) -->
+    <rect x="12" y="8" width="216" height="324" rx="14" class="cut-body" />
+
+    <!-- Caras interiores: el hueco visto en corte -->
+    {celdas.map((c) => (
+      <rect
+        x={c.x}
+        y={c.y}
+        width={CELDA_W}
+        height={CELDA_H}
+        rx="8"
+        class="cut-void"
+      />
+    ))}
+
+    <!-- Relleno animado: se enciende celda por celda -->
+    {celdas.map((c, i) => (
+      <rect
+        x={c.x}
+        y={c.y}
+        width={CELDA_W}
+        height={CELDA_H}
+        rx="8"
+        class={`cut-fill cut-fill--${i + 1}`}
+      />
+    ))}
+
+    <!-- Cota del ancho: 12 cm -->
+    <g class="cut-dim">
+      <path d="M12 352h216" />
+      <path d="M12 346v12M228 346v12" />
+      <text x="120" y="372" text-anchor="middle">12 cm</text>
+    </g>
+
+    <!-- Cota del alto: 18 cm -->
+    <g class="cut-dim">
+      <path d="M-22 8v324" />
+      <path d="M-28 8h12M-28 332h12" />
+      <text x="-30" y="170" text-anchor="middle" transform="rotate(-90 -30 170)">18 cm</text>
+    </g>
+  </svg>
+
+  {caption && <figcaption class="brick-cut-caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .brick-cut {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .brick-cut-svg {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Arcilla: el color real del ladrillo, apagado para no competir con
+     el terracota del acento. */
+  .cut-body {
+    fill: #c98a63;
+    stroke: #a2663f;
+    stroke-width: 2;
+  }
+
+  /* El hueco visto de frente: en sombra. */
+  .cut-void { fill: #3b2118; }
+
+  /* El relleno: estado base = celdas encendidas. El dibujo se ve completo
+     aunque no haya animación. */
+  .cut-fill {
+    fill: var(--brand-rust);
+    opacity: 1;
+  }
+
+  .cut-dim {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+  }
+  .cut-dim text {
+    fill: var(--text-muted);
+    stroke: none;
+    font-family: var(--font-mono);
+    font-size: 15px;
+  }
+
+  .brick-cut-caption {
+    margin: 0;
+    max-width: 34ch;
+    text-align: center;
+    font-size: var(--fs-100);
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+</style>
