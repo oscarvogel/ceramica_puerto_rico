@@ -169,6 +169,23 @@ Publicado a las 13:31. Respaldo del `.htaccess` anterior en
 raíz). El `.htaccess` de WordPress y el resto de sus archivos quedaron donde
 estaban: el sitio ya no los usa, pero siguen ahí, por si hay que volver atrás.
 
+### Deploy del rediseño (24/10/2026) — dos rondas
+
+Publicado en dos rondas, cada una con su PR y su deploy:
+
+| Ronda | PR | Qué | Respaldo del `.htaccess` |
+|---|---|---|---|
+| 1 | #14 | El diseño (Fases 0 y 1), sin animaciones | `/revision-20261024-0829/.htaccess` |
+| 2 | #15 | La capa de movimiento (Fase 2) | `/revision-20261024-0914/.htaccess` |
+
+Cada ronda: 72 archivos del sitio y 348 de `vendor/`, subidos de a uno, con
+**0 tamaños distintos** y las cuatro rutas en 200.
+
+**La IP de esta máquina quedó baneada por el hosting** (ver arriba), así que
+las dos rondas se publicaron por un túnel SOCKS5. El deploy tiene que ir por
+ese túnel mientras el ban siga vigente: **no tires de `deploy.cmd` a secas
+mientras la IP esté baneada**, porque se queda esperando en cada conexión.
+
 ### Cuidado: no listar el docroot entero por FTP (23/10/2026, 15:50)
 
 La verificación de tamaños (`Test-Tree`) listaba **todas** las carpetas del
