@@ -32,8 +32,8 @@ if /i "%~1"=="--dry-run" (
 set CODE=%ERRORLEVEL%
 if not "%CODE%"=="0" (
   echo.
-  echo  El deploy termino con error (codigo %CODE%).
-  echo  Se dejo el .htaccess anterior respaldado en /revision-<sello>/.htaccess
+  echo  El deploy termino con error ^(codigo %CODE%^).
+  echo  Se dejo el .htaccess anterior respaldado en /revision-^<sello^>/.htaccess
   echo  por si hay que volver atras.
   echo.
 )
