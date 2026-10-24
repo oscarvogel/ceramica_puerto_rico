@@ -86,6 +86,26 @@ set FTP_DIR=/
 deploy.cmd
 ```
 
+**Si el hosting bloquea la IP de origen, el deploy sale por un túnel.**
+El 23/10/2026 el deploy listó el docroot entero por FTP y el servidor baneó la
+IP de salida (21/80/443 caídos, sin ping) — el sitio seguía en pie desde el
+exterior, pero la máquina quepublicaba no lo alcanzaba. Cuando eso pasa:
+
+```
+ssh -N -D 1080 <maquina-con-acceso-al-hosting>     # tunel SOCKS5
+set FTP_SOCKS5=127.0.0.1:1080
+deploy.cmd
+```
+
+`deploy.ps1` agrega `--socks5-hostname` a todas las llamadas de `curl` cuando
+`FTP_SOCKS5` está definida, y también a la comprobación final del sitio.
+
+> **Por qué `--socks5-hostname` y no un reenvío TCP local (`ssh -L`).** Con
+> `--socks5-hostname` la resolución del nombre la hace el proxy, pero la
+> validación del certificado TLS sigue usando el hostname real. Con `-L` hacia
+> `127.0.0.1` el certificado no coincide con el host y **curl corta con error
+> 60** (certificado SSL) aunque el túnel esté perfecto.
+
 Las credenciales **no** están en el repo: viven en `.ferozo-credentials` (ignorado
 por git). El servidor es ProFTPD con `AUTH SSL` en el puerto 21 (FTPS explícito;
 el 990 está cerrado), así que la subida necesita `--ssl-reqd`.
